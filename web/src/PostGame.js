@@ -4,19 +4,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import './PostGame.css';
-
-// Firebase configuration
-const firebaseConfig = {
-  apiKey: 'AIzaSyD6QqmGEEy-uTUdIUFHC38mbtuv3kGMLoU',
-  authDomain: 'school-9b924.firebaseapp.com',
-  databaseURL: 'https://school-9b924-default-rtdb.firebaseio.com/',
-  projectId: 'school-9b924',
-  storageBucket: 'school-9b924.appspot.com',
-  messagingSenderId: '612048409247'
-};
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+import { auth, db, storage } from './firebaseConfig'; // Import Firebase services
 
 const PostGame = () => {
   const [name, setName] = useState("");

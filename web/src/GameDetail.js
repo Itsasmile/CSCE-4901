@@ -3,18 +3,8 @@ import { useParams } from 'react-router-dom';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
 import './GameDetail.css';
-
+import { auth, db, storage } from './firebaseConfig'; // Import Firebase services
 // Firebase configuration
-const firebaseConfig = {
-  apiKey: 'AIzaSyD6QqmGEEy-uTUdIUFHC38mbtuv3kGMLoU',
-  authDomain: 'school-9b924.firebaseapp.com',
-  databaseURL: 'https://school-9b924-default-rtdb.firebaseio.com/',
-  projectId: 'school-9b924',
-  storageBucket: 'school-9b924.appspot.com',
-  messagingSenderId: '612048409247'
-};
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
 
 const GameDetail = () => {
   const { id } = useParams(); // Get the game ID from the route parameter

@@ -5,20 +5,8 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import { getStorage, ref, listAll, getDownloadURL } from 'firebase/storage';
 import { useNavigate } from 'react-router-dom';
+import { auth, db, storage } from './firebaseConfig'; // Import Firebase services
 
-// Firebase configuration
-const firebaseConfig = {
-  apiKey: 'AIzaSyD6QqmGEEy-uTUdIUFHC38mbtuv3kGMLoU',
-  authDomain: 'school-9b924.firebaseapp.com',
-  databaseURL: 'https://school-9b924-default-rtdb.firebaseio.com/',
-  projectId: 'school-9b924',
-  storageBucket: 'school-9b924.appspot.com',
-  messagingSenderId: '612048409247'
-};
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
-const storage = getStorage(app);
 
 const Dashboard = () => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -115,6 +103,9 @@ const Dashboard = () => {
       {/* Header Section */}
       <header className="header bg-blue-500 text-white py-4">
         <div className="container mx-auto flex justify-between items-center">
+        <div className="logo">
+        <img src="https://firebasestorage.googleapis.com/v0/b/school-9b924.appspot.com/o/logowithoutbg.png?alt=media&token=7dbbe48b-289c-49b4-9102-aaab09d8b028" alt="Website Logo" className="w-12 h-12 rounded-full border border-white" />
+        </div>
           <h1 className="text-3xl font-bold">CoolTeamUNT</h1>
           <nav className="flex space-x-4">
             <a href="#" className="hover:underline">Home</a>
