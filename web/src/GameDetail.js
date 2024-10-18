@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getFirestore, doc, getDoc } from 'firebase/firestore';
-import { initializeApp } from 'firebase/app';
+import {doc, getDoc } from 'firebase/firestore';
+
 import './GameDetail.css';
-import { auth, db, storage } from './firebaseConfig'; // Import Firebase services
+import { db} from './firebaseConfig'; // Import Firebase services
 // Firebase configuration
 
 const GameDetail = () => {

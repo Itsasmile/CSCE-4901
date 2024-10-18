@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import './Dashboard.css';
-import { getFirestore, collection, getDocs, doc, getDoc } from 'firebase/firestore';
-import { initializeApp } from 'firebase/app';
-import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
-import { getStorage, ref, listAll, getDownloadURL } from 'firebase/storage';
+import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
+
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { ref, listAll, getDownloadURL } from 'firebase/storage';
 import { useNavigate } from 'react-router-dom';
 import { auth, db, storage } from './firebaseConfig'; // Import Firebase services
 

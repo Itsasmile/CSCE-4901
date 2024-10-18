@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL, listAll, deleteObject } from 'firebase/storage';
 import { useNavigate } from 'react-router-dom';
 import './ChangeProfile.css';
-import { auth, db, storage } from './firebaseConfig'; // Import Firebase services
+import { auth, storage } from './firebaseConfig'; // Import Firebase services
 
 const ChangeProfile = () => {
   const [image, setImage] = useState(null);
@@ -28,6 +26,17 @@ const ChangeProfile = () => {
       setUploadError(null);
       const user = auth.currentUser;
       if (user) {
+        // Reference to the user's avatar folder
+        const userImagesRef = ref(storage, `avatars/${user.uid}`);
+        const listResponse = await listAll(userImagesRef);
+
+        // Delete previous avatar if exists
+        if (listResponse.items.length > 0) {
+          const previousImageRef = listResponse.items[0];
+          await deleteObject(previousImageRef);
+        }
+
+        // Upload new avatar
         const storageRef = ref(storage, `avatars/${user.uid}/${image.name}`);
         await uploadBytes(storageRef, image);
         const downloadURL = await getDownloadURL(storageRef);

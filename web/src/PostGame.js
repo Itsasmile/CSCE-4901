@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import { getFirestore, collection, addDoc } from 'firebase/firestore';
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { collection, addDoc } from 'firebase/firestore';
+
 import { useNavigate } from 'react-router-dom';
 import './PostGame.css';
-import { auth, db, storage } from './firebaseConfig'; // Import Firebase services
+import { db } from './firebaseConfig'; // Import Firebase services
 
 const PostGame = () => {
   const [name, setName] = useState("");
