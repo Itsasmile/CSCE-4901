@@ -13,6 +13,7 @@ const PostGame = () => {
   const [imageUrl, setImageUrl] = useState("");
   const [description, setDescription] = useState("");
   const [description2, setDescription2] = useState("");
+  const [accessibility, setAccessibility] = useState("");
   const navigate = useNavigate();
 
   const handlePostGame = async (e) => {
@@ -26,6 +27,7 @@ const PostGame = () => {
         image_url: imageUrl,
         description,
         description2,
+        accessibility
       });
       navigate("/");
     } catch (error) {
@@ -109,6 +111,15 @@ const PostGame = () => {
               id="description2"
               value={description2}
               onChange={(e) => setDescription2(e.target.value)}
+              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 mb-2" htmlFor="accessibility">Accessibility</label>
+            <textarea
+              id="accessibility"
+              value={accessibility}
+              onChange={(e) => setAccessibility(e.target.value)}
               className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>

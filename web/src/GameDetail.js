@@ -47,6 +47,8 @@ const GameDetail = () => {
         <p className="text-gray-600 mb-4">{game.description}</p>
         <p className="text-gray-700 mb-2 font-bold">Additional Description:</p>
         <p className="text-gray-600">{game.description2}</p>
+        <p className="text-gray-700 mb-2 font-bold">Accessibility:</p>
+        <p className="text-gray-600">{game.accessibility}</p>
       </div>
     </div>
   );

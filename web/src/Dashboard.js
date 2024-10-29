@@ -6,7 +6,7 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { ref, listAll, getDownloadURL } from 'firebase/storage';
 import { useNavigate } from 'react-router-dom';
 import { auth, db, storage } from './firebaseConfig'; // Import Firebase services
-
+import Dropdown from 'react-bootstrap/Dropdown';
 
 const Dashboard = () => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -17,8 +17,26 @@ const Dashboard = () => {
   const [userName, setUserName] = useState("");
   const [userAvatar, setUserAvatar] = useState("https://via.placeholder.com/40");
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedCategory, setSelectedCategory] = useState("All"); // Add selectedCategory here
   const gamesPerPage = 6;
   const navigate = useNavigate();
+
+  function BasicExample({ selectedCategory, handleSelect }) {
+    return (
+      <Dropdown>
+        <Dropdown.Toggle variant="success" id="dropdown-basic">
+          {selectedCategory}
+        </Dropdown.Toggle>
+
+        <Dropdown.Menu>
+          <Dropdown.Item onClick={() => handleSelect("name")}>Name</Dropdown.Item>
+          <Dropdown.Item onClick={() => handleSelect("category")}>Category</Dropdown.Item>
+          <Dropdown.Item onClick={() => handleSelect("platform")}>Platform</Dropdown.Item>
+          <Dropdown.Item onClick={() => handleSelect("accessibility")}>Accessibility</Dropdown.Item>
+        </Dropdown.Menu>
+      </Dropdown>
+    );
+  }
 
   useEffect(() => {
     onAuthStateChanged(auth, async (currentUser) => {
@@ -70,15 +88,28 @@ const Dashboard = () => {
   };
 
   const handleSearch = () => {
-    const lowerCaseSearchTerm = searchTerm.toLowerCase();
-    const filteredGames = allGames.filter(game =>
-      game.name.toLowerCase().includes(lowerCaseSearchTerm) ||
-      game.category.toLowerCase().includes(lowerCaseSearchTerm) ||
-      game.platform.toLowerCase().includes(lowerCaseSearchTerm)
-    );
+    const lowerCaseSearchTerm = searchTerm?.toLowerCase() || "";
+
+    const filteredGames = allGames.filter(game => {
+      if (selectedCategory === "name") {
+        return game.name.toLowerCase().includes(lowerCaseSearchTerm);
+      } else if (selectedCategory === "category") {
+        return game.category.toLowerCase().includes(lowerCaseSearchTerm);
+      } else if (selectedCategory === "platform") {
+        return game.platform.toLowerCase().includes(lowerCaseSearchTerm);
+      } else if (selectedCategory === "accessibility" && game.accessibility) {
+        return game.accessibility.toLowerCase().includes(lowerCaseSearchTerm);
+      }
+      return false;
+    });
+
     setGames(filteredGames);
     setCurrentPage(1);
   };
+
+  useEffect(() => {
+    handleSearch();
+  }, [selectedCategory]); // Change from searchCategory to selectedCategory
 
   const handleLogout = async () => {
     try {
@@ -98,14 +129,18 @@ const Dashboard = () => {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  const handleSelectCategory = (category) => {
+    setSelectedCategory(category);
+  };
+
   return (
     <div className="dashboard">
       {/* Header Section */}
       <header className="header bg-blue-500 text-white py-4">
         <div className="container mx-auto flex justify-between items-center">
-        <div className="logo">
-        <img src="https://firebasestorage.googleapis.com/v0/b/school-9b924.appspot.com/o/logowithoutbg.png?alt=media&token=7dbbe48b-289c-49b4-9102-aaab09d8b028" alt="Website Logo" className="w-12 h-12 rounded-full border border-white" />
-        </div>
+          <div className="logo">
+            <img src="https://firebasestorage.googleapis.com/v0/b/school-9b924.appspot.com/o/logowithoutbg.png?alt=media&token=7dbbe48b-289c-49b4-9102-aaab09d8b028" alt="Website Logo" className="w-12 h-12 rounded-full border border-white" />
+          </div>
           <h1 className="text-3xl font-bold">CoolTeamUNT</h1>
           <nav className="flex space-x-4">
             <a href="#" className="hover:underline">Home</a>
@@ -148,7 +183,8 @@ const Dashboard = () => {
         <div className="container mx-auto text-center">
           <h2 className="text-4xl font-bold mb-4">We share what we love</h2>
           <p className="italic mb-6">"NOTHING IS ABSOLUTE, NOTHING IS FOREVER, NOTHING FROM NOTHING"</p>
-          <div className="flex justify-center">
+          <div className="flex justify-center items-center space-x-2">
+            <BasicExample selectedCategory={selectedCategory} handleSelect={handleSelectCategory} />
             <input
               type="text"
               value={searchTerm}
@@ -163,33 +199,39 @@ const Dashboard = () => {
 
       {/* Main Content Section */}
       <div className="main-content container mx-auto py-10">
-        <div className="flex flex-wrap justify-between">
-          {currentGames.map((game) => (
-            <div key={game.id} className="w-1/3 p-4">
-              <div className="game-card bg-gray-100 p-6 rounded-lg shadow-md">
-                <img src={game.image_url} alt={game.name} className="mb-4 cursor-pointer" onClick={() => navigate(`/game/${game.id}`)} />
-                <h3 className="text-xl font-bold">{game.name}</h3>
-                <p className="text-gray-700 mb-2">Category: {game.category}</p>
-                <p className="text-gray-700 mb-2">Platform: {game.platform}</p>
-                <p className="text-gray-700 mb-2">Rating: {game.rating}</p>
-                <p className="text-gray-600">{game.description}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-        {/* Pagination Controls */}
-        <div className="pagination flex justify-center mt-8">
-          {[...Array(totalPages).keys()].map(number => (
-            <button
-              key={number + 1}
-              onClick={() => paginate(number + 1)}
-              className={`px-4 py-2 mx-1 ${currentPage === number + 1 ? 'bg-blue-600 text-white' : 'bg-white text-blue-600'} rounded-lg border`}
-            >
-              {number + 1}
-            </button>
-          ))}
+  <div className="flex flex-wrap justify-between">
+    {currentGames.map((game) => (
+      <div key={game.id} className="w-1/3 p-4">
+        <div className="game-card bg-gray-100 p-6 rounded-lg shadow-md">
+          <img 
+            src={game.image_url} 
+            alt={game.name} 
+            className="mb-4 cursor-pointer" 
+            onClick={() => navigate(`/game/${game.id}`)} 
+            style={{ width: '100%', height: '200px', objectFit: 'cover' }} // Updated style for uniform image size
+          />
+          <h3 className="text-xl font-bold">{game.name}</h3>
+          <p className="text-gray-700 mb-2">Category: {game.category}</p>
+          <p className="text-gray-700 mb-2">Platform: {game.platform}</p>
+          <p className="text-gray-700 mb-2">Rating: {game.rating}</p>
+          <p className="text-gray-600">{game.description}</p>
         </div>
       </div>
+    ))}
+  </div>
+  {/* Pagination Controls */}
+  <div className="pagination flex justify-center mt-8">
+    {[...Array(totalPages).keys()].map(number => (
+      <button
+        key={number + 1}
+        onClick={() => paginate(number + 1)}
+        className={`px-4 py-2 mx-1 ${currentPage === number + 1 ? 'bg-blue-600 text-white' : 'bg-white text-blue-600'} rounded-lg border`}
+      >
+        {number + 1}
+      </button>
+    ))}
+  </div>
+</div>
     </div>
   );
 };
