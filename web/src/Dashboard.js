@@ -29,6 +29,7 @@ const Dashboard = () => {
         </Dropdown.Toggle>
 
         <Dropdown.Menu>
+         <Dropdown.Item onClick={() => handleSelect("All")}>All</Dropdown.Item>
           <Dropdown.Item onClick={() => handleSelect("name")}>Name</Dropdown.Item>
           <Dropdown.Item onClick={() => handleSelect("category")}>Category</Dropdown.Item>
           <Dropdown.Item onClick={() => handleSelect("platform")}>Platform</Dropdown.Item>
@@ -91,6 +92,20 @@ const Dashboard = () => {
     const lowerCaseSearchTerm = searchTerm?.toLowerCase() || "";
 
     const filteredGames = allGames.filter(game => {
+      if (selectedCategory === "All") {
+        // Check if there's no search term, return all games
+        if (!lowerCaseSearchTerm) return true;
+        
+        // Otherwise, filter based on search term across all fields
+        return (
+          game.name.toLowerCase().includes(lowerCaseSearchTerm) ||
+          game.category.toLowerCase().includes(lowerCaseSearchTerm) ||
+          game.platform.toLowerCase().includes(lowerCaseSearchTerm) ||
+          (game.accessibility && game.accessibility.toLowerCase().includes(lowerCaseSearchTerm))
+        );
+      }
+    
+      // Filter based on specific category
       if (selectedCategory === "name") {
         return game.name.toLowerCase().includes(lowerCaseSearchTerm);
       } else if (selectedCategory === "category") {
@@ -100,8 +115,10 @@ const Dashboard = () => {
       } else if (selectedCategory === "accessibility" && game.accessibility) {
         return game.accessibility.toLowerCase().includes(lowerCaseSearchTerm);
       }
+      
       return false;
     });
+    
 
     setGames(filteredGames);
     setCurrentPage(1);
