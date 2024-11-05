@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import './Dashboard.css';
 import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
-
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { ref, listAll, getDownloadURL } from 'firebase/storage';
 import { useNavigate } from 'react-router-dom';
@@ -17,27 +16,65 @@ const Dashboard = () => {
   const [userName, setUserName] = useState("");
   const [userAvatar, setUserAvatar] = useState("https://via.placeholder.com/40");
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedCategory, setSelectedCategory] = useState("All"); // Add selectedCategory here
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const gamesPerPage = 6;
   const navigate = useNavigate();
 
   function BasicExample({ selectedCategory, handleSelect }) {
+    const [localShowDropdown, setLocalShowDropdown] = useState(false);
+  
+  
+    const handleMouseEnter = () => {
+      setLocalShowDropdown(true);
+    };
+  
+    const handleMouseLeave = () => {
+      setLocalShowDropdown(false);
+    };
+  
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (!event.target.closest('.dropdown')) {
+          setLocalShowDropdown(false);
+        }
+      };
+  
+      document.addEventListener('mousedown', handleClickOutside);
+      
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }, []);
+  
     return (
-      <Dropdown>
+      <Dropdown
+        onMouseEnter={handleMouseEnter}
+        show={localShowDropdown}
+        className="dropdown"
+      >
         <Dropdown.Toggle variant="success" id="dropdown-basic">
           {selectedCategory}
         </Dropdown.Toggle>
-
-        <Dropdown.Menu>
-         <Dropdown.Item onClick={() => handleSelect("All")}>All</Dropdown.Item>
-          <Dropdown.Item onClick={() => handleSelect("name")}>Name</Dropdown.Item>
-          <Dropdown.Item onClick={() => handleSelect("category")}>Category</Dropdown.Item>
-          <Dropdown.Item onClick={() => handleSelect("platform")}>Platform</Dropdown.Item>
-          <Dropdown.Item onClick={() => handleSelect("accessibility")}>Accessibility</Dropdown.Item>
+        <Dropdown.Menu
+          className={`dropdown-menu ${localShowDropdown ? 'show' : ''}`}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          <Dropdown.Item onClick={() => handleSelect("All")}>All</Dropdown.Item>
+          <Dropdown.Item onClick={() => handleSelect("Name")}>Name</Dropdown.Item>
+          <Dropdown.Item onClick={() => handleSelect("Category")}>Category</Dropdown.Item>
+          <Dropdown.Item onClick={() => handleSelect("Platform")}>Platform</Dropdown.Item>
+          <Dropdown.Item onClick={() => handleSelect("Accessibility")}>Accessibility</Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
     );
   }
+  
+
+  
+  
+  
 
   useEffect(() => {
     onAuthStateChanged(auth, async (currentUser) => {
@@ -106,20 +143,19 @@ const Dashboard = () => {
       }
     
       // Filter based on specific category
-      if (selectedCategory === "name") {
+      if (selectedCategory === "Name") {
         return game.name.toLowerCase().includes(lowerCaseSearchTerm);
-      } else if (selectedCategory === "category") {
+      } else if (selectedCategory === "Category") {
         return game.category.toLowerCase().includes(lowerCaseSearchTerm);
-      } else if (selectedCategory === "platform") {
+      } else if (selectedCategory === "Platform") {
         return game.platform.toLowerCase().includes(lowerCaseSearchTerm);
-      } else if (selectedCategory === "accessibility" && game.accessibility) {
+      } else if (selectedCategory === "Accessibility" && game.accessibility) {
         return game.accessibility.toLowerCase().includes(lowerCaseSearchTerm);
       }
       
       return false;
     });
     
-
     setGames(filteredGames);
     setCurrentPage(1);
   };
@@ -132,9 +168,15 @@ const Dashboard = () => {
     try {
       await signOut(auth);
       setUser(null);
-      window.location.reload();
+      navigate('/login');
     } catch (error) {
       console.error("Error logging out:", error);
+    }
+  };
+
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      handleSearch();
     }
   };
 
@@ -148,6 +190,11 @@ const Dashboard = () => {
 
   const handleSelectCategory = (category) => {
     setSelectedCategory(category);
+  };
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+    document.body.classList.toggle('dark-mode', !isDarkMode);
   };
 
   return (
@@ -181,8 +228,10 @@ const Dashboard = () => {
                       </div>
                     )}
                   </div>
+                  <div className="button-container">
                   <button className="bg-white text-blue-500 px-4 py-2 rounded-lg hover:bg-gray-200" onClick={() => navigate('/post')}>Create Post</button>
                   <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">Log out</button>
+                  </div>  
                 </div>
               </div>
             ) : (
@@ -192,6 +241,9 @@ const Dashboard = () => {
               </>
             )}
           </div>
+          <button onClick={toggleDarkMode} onMouseLeave={() => document.activeElement.blur()} className="bg-white text-blue-500 px-4 py-2 rounded-lg hover:bg-gray-200">
+            {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+          </button>
         </div>
       </header>
 
@@ -206,8 +258,9 @@ const Dashboard = () => {
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyPress={handleKeyPress} // Add this line
               className="w-1/2 p-2 rounded-l-lg border-none"
-              placeholder="What are you looking for? (Name, category, platform)"
+              placeholder="What are you looking for? (Name, Category, Platform, etc)"
             />
             <button className="bg-blue-600 text-white p-2 rounded-r-lg" onClick={handleSearch}>Search</button>
           </div>
