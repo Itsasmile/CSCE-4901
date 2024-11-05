@@ -95,6 +95,7 @@ body.dark-mode {
 .header button:focus {
   background-color: var(--primary-color);
   outline: 3px solid var(--secondary-color);
+  color: var(--background-color)
 }
 
 .header img {

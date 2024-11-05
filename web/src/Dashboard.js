@@ -73,9 +73,6 @@ const Dashboard = () => {
   
 
   
-  
-  
-
   useEffect(() => {
     onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
@@ -86,6 +83,7 @@ const Dashboard = () => {
     });
     fetchGames();
   }, []);
+  
 
   const fetchGames = async () => {
     try {
@@ -236,8 +234,8 @@ const Dashboard = () => {
               </div>
             ) : (
               <>
-                <button className="bg-white text-blue-500 px-4 py-2 rounded-lg hover:bg-gray-200" onClick={() => navigate('/login')}>Đăng nhập</button>
-                <button className="bg-white text-blue-500 px-4 py-2 rounded-lg hover:bg-gray-200" onClick={() => navigate('/register')}>Đăng ký</button>
+                <button className="bg-white text-blue-500 px-4 py-2 rounded-lg hover:bg-gray-200" onClick={() => navigate('/login')}>Login</button>
+                <button className="bg-white text-blue-500 px-4 py-2 rounded-lg hover:bg-gray-200" onClick={() => navigate('/register')}>Register</button>
               </>
             )}
           </div>
