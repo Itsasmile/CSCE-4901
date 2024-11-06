@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { auth, db } from './firebaseConfig'; // Import Firebase services
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import './ChangeName.css';
 
@@ -24,15 +24,21 @@ const ChangeName = () => {
       setUpdateError(null);
       const user = auth.currentUser;
       if (user) {
-        const userDoc = doc(db, 'users', user.uid);
-        await updateDoc(userDoc, { name: newName });
-        setUpdateSuccess(true);
+        const userDocRef = doc(db, 'users', user.uid);
+        const userDoc = await getDoc(userDocRef);
+
+        if (userDoc.exists()) {
+          await updateDoc(userDocRef, { name: newName });
+          setUpdateSuccess(true);
+        } else {
+          setUpdateError('User document does not exist.');
+        }
       } else {
         setUpdateError('User is not logged in.');
       }
     } catch (error) {
       console.error('Error updating name:', error);
-      setUpdateError('Failed to update name. Please try again later.');
+      setUpdateError(`Failed to update name. Please try again later. Error: ${error.message}`);
     }
   };
 
@@ -48,7 +54,7 @@ const ChangeName = () => {
       />
       <button
         onClick={handleUpdate}
-        className="bg-blue-500 text-white px-6 py-2 mt-4 rounded-lg hover:bg-blue-600"
+        className="bg-blue-500 text-black px-6 py-2 mt-4 rounded-lg hover:bg-blue-600"
       >
         Update Name
       </button>
@@ -56,7 +62,7 @@ const ChangeName = () => {
       {updateSuccess && <p className="text-green-500 mt-4">Name updated successfully!</p>}
       <button
         onClick={() => navigate('/dashboard')}
-        className="bg-gray-500 text-white px-4 py-2 mt-6 rounded-lg hover:bg-gray-600"
+        className="bg-gray-500 text-black px-4 py-2 mt-6 rounded-lg hover:bg-gray-600"
       >
         Back to Dashboard
       </button>
