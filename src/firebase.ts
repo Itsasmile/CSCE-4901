@@ -6,7 +6,7 @@ import { getAuth } from 'firebase/auth';
 interface Config {
     apiKey: string;
     authDomain: string;
-    databauseURL: string;
+    databaseURL: string;
     projectId: string;
     storageBucket: string;
     messagingSenderId: string;
@@ -20,7 +20,6 @@ const firebaseConfig: Config = {
   storageBucket: 'school-9b924.appspot.com',
   messagingSenderId: '612048409247',
 };
-
 
 const app = initializeApp(firebaseConfig);
 
