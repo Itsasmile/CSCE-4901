@@ -22,7 +22,7 @@ export default function UserComponent({ user }: Props): ReactNode {
 
   if (!user)
     return (
-      <article className="flex gap-2.5">
+      <article className="flex gap-2.5 ml-auto">
         <Button onClick={() => nav("/login")}>Login</Button>
         <Button onClick={() => nav("/register")}>Register</Button>
       </article>

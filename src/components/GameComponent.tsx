@@ -32,7 +32,7 @@ export default function GameComponent({ game }: Props): ReactNode {
               objectFit: "cover",
             }}
           />
-          <CardDescription className="font-roboto text-base font-normal text-gray-800 leading-snug my-2">{game.description}</CardDescription>
+          <CardDescription className="font-roboto text-base font-normal text-foreground leading-snug my-2">{game.description}</CardDescription>
         </CardHeader>
         <CardFooter className="text-sm font-normal flex gap-2.5">
           <p>Category: {game.category}</p>
