@@ -1,4 +1,5 @@
-import React from "react";
-import firebase from "firebase/app";
+import { createContext } from "react";
+import { User } from "firebase/auth";
+import { auth } from "../firebase";
 
-export const AuthContext = React.createContext<firebase.User | null>(null);
+export const AuthContext = createContext<User | null>(auth.currentUser);
