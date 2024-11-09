@@ -219,7 +219,7 @@ const Dashboard = () => {
   <div className="flex flex-wrap justify-between">
     {currentGames.map((game) => (
       <div key={game.id} className="w-1/3 p-4">
-        <div className="game-card bg-gray-100 p-6 rounded-lg shadow-md">
+         <div className="game-card bg-gray-100 p-6 rounded-lg shadow-md flex flex-col h-full">
           <img 
             src={game.image_url} 
             alt={game.name} 
