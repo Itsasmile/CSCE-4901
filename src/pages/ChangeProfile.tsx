@@ -1,17 +1,21 @@
-import React, { useState } from 'react';
+import { ReactNode, useContext, useState } from "react";
+import { doc, getDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL, listAll, deleteObject } from 'firebase/storage';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from "@/context/AuthContext";
+import { getStorage } from "firebase/storage"; // Import Firebase services
 import './ChangeProfile.css';
-import { auth, storage } from './firebaseConfig'; // Import Firebase services
 
-const ChangeProfile = () => {
-  const [image, setImage] = useState(null);
-  const [uploadError, setUploadError] = useState(null);
+export default function ChangeProfile(): ReactNode {
+  const [image, setImage] = useState<File | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const navigate = useNavigate();
+  const user = useContext(AuthContext);
+  const storage = getStorage();
 
-  const handleImageChange = (e) => {
-    if (e.target.files[0]) {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
       setImage(e.target.files[0]);
     }
   };
@@ -24,7 +28,6 @@ const ChangeProfile = () => {
 
     try {
       setUploadError(null);
-      const user = auth.currentUser;
       if (user) {
         // Reference to the user's avatar folder
         const userImagesRef = ref(storage, `avatars/${user.uid}`);
@@ -52,9 +55,9 @@ const ChangeProfile = () => {
   };
 
   return (
-    <div className="change-profile-container">
+    <div className="change-profile-container max-w-md mx-auto p-8 bg-white rounded-lg shadow-lg text-center">
       <h1 className="text-3xl font-bold mb-6">Change Profile Picture</h1>
-      <input type="file" onChange={handleImageChange} />
+      <input type="file" onChange={handleImageChange} className="mt-4 p-2 border rounded-lg w-full" />
       <button
         onClick={handleUpload}
         className="bg-blue-500 text-white px-6 py-2 mt-4 rounded-lg hover:bg-blue-600"
@@ -71,6 +74,4 @@ const ChangeProfile = () => {
       </button>
     </div>
   );
-};
-
-export default ChangeProfile;
+}

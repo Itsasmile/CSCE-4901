@@ -6,6 +6,7 @@ import "./output.css";
 import { AuthProvider } from "./providers/AuthProvider";
 import Navbar from "./components/Navbar";
 import GamePage from "./pages/GamePage";
+import Login from "./pages/Login";
 
 const router = createBrowserRouter([
   {
@@ -16,6 +17,10 @@ const router = createBrowserRouter([
     path: "/game/:id",
     element: <GamePage />,
   },
+  {
+    path: "/login",
+    element: <Login />,
+  }
 ]);
 
 createRoot(document.getElementById("root")!).render(

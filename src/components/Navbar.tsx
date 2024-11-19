@@ -53,7 +53,7 @@ export default function Navbar(): ReactNode {
 
   console.log(loc);
   return (  
-    <header className="grid grid-cols-3 items-center py-4 px-4 bg-background">
+    <header className="border-border border-b grid grid-cols-3 items-center py-4 px-4 bg-background">
       <div className="flex justify-start">
       <img
         src="https://firebasestorage.googleapis.com/v0/b/school-9b924.appspot.com/o/logowithoutbg.png?alt=media&token=7dbbe48b-289c-49b4-9102-aaab09d8b028"
