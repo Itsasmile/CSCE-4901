@@ -1,10 +1,11 @@
 import { ReactNode, useContext, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import { auth } from "../firebase";
 import { ref, uploadBytes, getDownloadURL, listAll, deleteObject } from 'firebase/storage';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from "@/context/AuthContext";
 import { getStorage } from "firebase/storage"; // Import Firebase services
 import './ChangeProfile.css';
+import { Input } from "@/components/ui/input";
 
 export default function ChangeProfile(): ReactNode {
   const [image, setImage] = useState<File | null>(null);
@@ -55,6 +56,7 @@ export default function ChangeProfile(): ReactNode {
   };
 
   return (
+    
     <div className="change-profile-container max-w-md mx-auto p-8 bg-white rounded-lg shadow-lg text-center">
       <h1 className="text-3xl font-bold mb-6">Change Profile Picture</h1>
       <input type="file" onChange={handleImageChange} className="mt-4 p-2 border rounded-lg w-full" />
