@@ -34,7 +34,9 @@ function Home(): ReactNode {
     <section className="bg-background">
       <article className="bg-secondary py-8">
         <div className="container mx-auto text-center text-foreground">
-          <h2 className="text-4xl font-sans font-bold mb-4">We share what we love</h2>
+          <h2 className="text-4xl font-sans font-bold mb-4">
+            We share what we love
+          </h2>
           <p className="italic mb-6 font-sans">
             "NOTHING IS ABSOLUTE, NOTHING IS FOREVER, NOTHING FROM NOTHING"
           </p>

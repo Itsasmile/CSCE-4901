@@ -1,4 +1,4 @@
-import { User, signOut } from "firebase/auth";
+import { User, signOut, updateProfile } from "firebase/auth";
 import { auth } from "../firebase";
 import { ReactNode } from "react";
 import { Button } from "./ui/button";
@@ -27,6 +27,7 @@ export default function UserComponent({ user }: Props): ReactNode {
         <Button onClick={() => nav("/register")}>Register</Button>
       </article>
     );
+  console.log(user.displayName);
 
   const handleLogout = async () => {
     try {
@@ -41,31 +42,30 @@ export default function UserComponent({ user }: Props): ReactNode {
     <div className="relative profile-container">
       <div className="flex items-center space-x-2 cursor-pointer">
         <img
-          src={user.photoURL || undefined}
+          src={user.photoURL || "https://via.placeholder.com/150"}
           alt="User Avatar"
           className="rounded-full"
           style={{ width: "40px", height: "40px" }}
         />
-        <p className="font-bold">{user.displayName || user.email}</p>
+        {/* <p className="font-bold">{user.displayName}</p>  */}
       </div>
-
-      <DropdownMenu>
-        <DropdownMenuTrigger>User Info</DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuLabel>Selected Category</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => nav("/change-profile")}>
-            Change Profile Picture
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => nav("/change-name")}>
-            Change Name
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => nav("/post")}>
-            Create Post
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleLogout}>Log Out</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger className="bi bi-cogwheel">{user.displayName}</DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => nav("/change-profile")}>
+              Change Profile Picture
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => nav("/change-name")}>
+              Change Name
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => nav("/post")}>
+              Create Post
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>Log Out</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </Button>
     </div>
   );
 }

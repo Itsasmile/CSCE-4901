@@ -19,6 +19,7 @@ export default function Login(): ReactNode {
               type="email"
               id="email"
               onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
               required
             ></Input>
           </div>

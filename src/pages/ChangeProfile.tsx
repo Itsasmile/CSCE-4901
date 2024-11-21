@@ -1,11 +1,10 @@
 import { ReactNode, useContext, useState } from "react";
-import { auth } from "../firebase";
 import { ref, uploadBytes, getDownloadURL, listAll, deleteObject } from 'firebase/storage';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from "@/context/AuthContext";
 import { getStorage } from "firebase/storage"; // Import Firebase services
 import './ChangeProfile.css';
-import { Input } from "@/components/ui/input";
+
 
 export default function ChangeProfile(): ReactNode {
   const [image, setImage] = useState<File | null>(null);
