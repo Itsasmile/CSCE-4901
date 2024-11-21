@@ -6,8 +6,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 
@@ -51,7 +49,7 @@ export default function UserComponent({ user }: Props): ReactNode {
       </div>
       <Button>
         <DropdownMenu>
-          <DropdownMenuTrigger className="bi bi-cogwheel">{user.displayName}</DropdownMenuTrigger>
+          <DropdownMenuTrigger>{user.displayName|| "Name not recognized, please change it."} </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem onClick={() => nav("/change-profile")}>
               Change Profile Picture
