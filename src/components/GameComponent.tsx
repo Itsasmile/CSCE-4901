@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
 import { Game } from "@/types";
 import {
   Card,
@@ -8,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
+import { useNavigate } from "@tanstack/react-router";
 
 interface Props {
   game: Game;
@@ -25,14 +25,16 @@ export default function GameComponent({ game }: Props): ReactNode {
             src={game.image_url}
             alt={game.name}
             className="mb-4 cursor-pointer"
-            onClick={() => navigate(`/game/${game.id}`)}
+            onClick={() => navigate({ to: `/game/${game.id}` })}
             style={{
               width: "100%",
               height: "200px",
               objectFit: "cover",
             }}
           />
-          <CardDescription className="font-roboto text-base font-normal text-foreground leading-snug my-2">{game.description}</CardDescription>
+          <CardDescription className="font-roboto text-base font-normal text-foreground leading-snug my-2">
+            {game.description}
+          </CardDescription>
         </CardHeader>
         <CardFooter className="text-sm font-normal flex gap-2.5">
           <p>Category: {game.category}</p>

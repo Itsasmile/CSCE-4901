@@ -1,12 +1,15 @@
-import { ReactNode } from "react";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLogin } from "@/hooks/useLogin";
-import { Button } from "@/components/ui/button";
+import { createFileRoute } from "@tanstack/react-router";
 
-export default function Login(): ReactNode {
+export const Route = createFileRoute("/login")({
+  component: RouteComponent,
+});
+
+function RouteComponent() {
   const { error, handleLogin, enterEmail, enterPassword } = useLogin();
-
   return (
     <div className="border-border border flex justify-center items-center h-screen">
       <div className=" border-border border bg-background p-8 rounded-lg shadow-lg w-full max-w-md">

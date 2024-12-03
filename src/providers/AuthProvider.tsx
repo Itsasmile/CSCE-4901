@@ -14,13 +14,14 @@ interface Props {
   children?: ReactNode;
 }
 export function AuthProvider({ children }: Props): ReactNode {
-  const [authState, setAuthState] = useState<AuthState | null>({
+  const [authState, setAuthState] = useState<AuthState>({
     newUserSignin,
     signOut: userSignOut,
     updateDisplayName,
     updateProfilePic,
     userSignIn,
     user: null,
+    loading: true,
   });
 
   async function newUserSignin(
@@ -28,110 +29,83 @@ export function AuthProvider({ children }: Props): ReactNode {
     username: string,
     password: string
   ) {
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-    await setDoc(doc(db, "users", userCredential.user.uid), {
+    const creds = await createUserWithEmailAndPassword(auth, email, password);
+    await setDoc(doc(db, "users", creds.user.uid), {
       displayName: username,
       email: email,
     });
-    await updateProfile(userCredential.user, { displayName: username });
-    await userCredential.user.reload();
-
+    await updateProfile(creds.user, { displayName: username });
     setAuthState({
       ...authState,
-      newUserSignin: newUserSignin,
-      signOut: userSignOut,
-      updateDisplayName,
-      updateProfilePic,
-      userSignIn,
-      user: userCredential.user,
+      loading: true,
     });
   }
 
   async function userSignOut() {
-    await signOut(auth);
     setAuthState({
       ...authState,
-      newUserSignin: newUserSignin,
-      signOut: userSignOut,
-      updateDisplayName,
-      updateProfilePic,
-      userSignIn,
-      user: null,
+      loading: true,
     });
+    await signOut(auth);
   }
 
   async function updateDisplayName(username: string) {
-    if (authState?.user) {
-      console.log(authState?.user.displayName);
+    setAuthState({
+      ...authState,
+      loading: true,
+    });
+
+    await updateProfile(authState?.user!, { displayName: username });
+  }
+
+  async function updateProfilePic(photoURL: string) {
+    setAuthState({
+      ...authState,
+      loading: true,
+    });
+
+    if (!authState.user) {
       throw new Error("User not found");
     }
 
-    await updateProfile(authState?.user!, { displayName: username });
-    console.log(updateProfile);
-    await authState?.user!.reload();
-
-    setAuthState({
-      ...authState,
-      newUserSignin: newUserSignin,
-      signOut: userSignOut,
-      updateDisplayName,
-      updateProfilePic,
-      userSignIn,
-      user: authState!.user,
-    });
-  }
-  
-
-  async function updateProfilePic(photoURL: string) {
     await updateProfile(authState?.user!, { photoURL: photoURL });
-    await authState!.user!.reload();
-
-    setAuthState({
-      ...authState,
-      newUserSignin: newUserSignin,
-      signOut: userSignOut,
-      updateDisplayName,
-      updateProfilePic,
-      userSignIn,
-      user: authState!.user,
-    });
   }
 
   async function userSignIn(email: string, password: string) {
-    const creds = await signInWithEmailAndPassword(auth, email, password);
+    setAuthState({
+      ...authState,
+      loading: true,
+    });
 
-    if (creds.user) {
-      setAuthState({
-        ...authState,
-        newUserSignin: newUserSignin,
-        signOut: userSignOut,
-        updateDisplayName,
-        updateProfilePic,
-        userSignIn,
-
-        user: creds.user,
-      });
-    }
+    await signInWithEmailAndPassword(auth, email, password);
   }
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
+    console.log("resubbed");
+    const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
+      if (!firebaseUser) {
+        setAuthState({
+          ...authState,
+          user: firebaseUser,
+          loading: true,
+        });
+        console.log("Failed to find user");
+        return;
+      }
+
+      console.log("found user");
+
       setAuthState({
         ...authState,
         user: firebaseUser,
-        newUserSignin: newUserSignin,
-        signOut: userSignOut,
-        userSignIn,
-        updateDisplayName,
-        updateProfilePic,
+        loading: false,
       });
     });
 
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+      console.log("unsubbed");
+    };
   }, []);
 
   return (

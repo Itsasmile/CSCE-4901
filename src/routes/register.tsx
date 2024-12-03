@@ -1,12 +1,17 @@
-import { ReactNode } from "react";
+import { createFileRoute } from "@tanstack/react-router";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRegister } from "@/hooks/useRegister";
 import { Button } from "@/components/ui/button";
 
-export default function Register(): ReactNode {
+export const Route = createFileRoute("/register")({
+  component: RouteComponent,
+});
+
+function RouteComponent() {
   const { error, handleRegister, setUser, setEmail, setPassword } =
     useRegister();
+    
 
   return (
     <div className="border-border flex justify-center items-center h-screen">

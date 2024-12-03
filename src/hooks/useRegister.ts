@@ -1,6 +1,6 @@
 import { AuthContext } from "@/context/AuthContext";
+import { useNavigate } from "@tanstack/react-router";
 import React, { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 interface State {
   email?: string;
@@ -35,9 +35,13 @@ export function useRegister() {
       return;
     }
     try {
-      await authState?.newUserSignin(state.email, state.username, state.password);
+      await authState?.newUserSignin!(
+        state.email,
+        state.username,
+        state.password
+      );
 
-      navigate("/");
+      navigate({ to: "/" });
     } catch (err) {
       setState({
         ...state,

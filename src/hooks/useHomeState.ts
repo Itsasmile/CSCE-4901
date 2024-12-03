@@ -69,7 +69,7 @@ export function useHomeState() {
           ({
             id: doc.id,
             ...doc.data(),
-          } as Game)
+          }) as Game
       );
 
       setState({

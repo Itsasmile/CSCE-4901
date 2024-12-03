@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { AuthContext } from "@/context/AuthContext";
+import { useNavigate } from "@tanstack/react-router";
 
 interface State {
   email?: string;
@@ -29,8 +29,8 @@ export function useLogin() {
       return;
     }
     try {
-      await authState?.userSignIn(state.email, state.password);
-      navigate("/");
+      await authState?.userSignIn!(state.email, state.password);
+      navigate({ to: "/" });
     } catch (err) {
       setState({
         ...state,
