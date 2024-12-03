@@ -5,7 +5,7 @@ import { useLogin } from "@/hooks/useLogin";
 import { Button } from "@/components/ui/button";
 
 export default function Login(): ReactNode {
-  const { error, handleLogin, setEmail, setPassword } = useLogin();
+  const { error, handleLogin, enterEmail, enterPassword } = useLogin();
 
   return (
     <div className="border-border border flex justify-center items-center h-screen">
@@ -18,7 +18,7 @@ export default function Login(): ReactNode {
             <Input
               type="email"
               id="email"
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => enterEmail(e.target.value)}
               placeholder="Email"
               required
             ></Input>
@@ -28,7 +28,7 @@ export default function Login(): ReactNode {
             <Input
               type="password"
               id="password"
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => enterPassword(e.target.value)}
               placeholder="Password"
               required
             ></Input>

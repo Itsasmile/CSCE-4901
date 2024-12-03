@@ -72,7 +72,7 @@ function Home(): ReactNode {
           {allGames
             .slice((currentPage - 1) * gamesPerPage, currentPage * gamesPerPage)
             .map((game) => (
-              <GameComponent game={game} />
+              <GameComponent key={game.id} game={game} />
             ))}
         </section>
         <Pagination>

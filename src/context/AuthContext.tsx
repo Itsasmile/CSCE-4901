@@ -1,5 +1,5 @@
+import { AuthState } from "@/lib/types";
 import { createContext } from "react";
-import { User } from "firebase/auth";
-import { auth } from "../firebase";
 
-export const AuthContext = createContext<User | null>(auth.currentUser);
+
+export const AuthContext = createContext<AuthState | null>(null);

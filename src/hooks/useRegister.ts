@@ -1,22 +1,20 @@
-import React, { useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { AuthContext } from "@/context/AuthContext";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth, db } from "../firebase"; // Import Firebase services
-import { updateProfile } from "firebase/auth";
 
 interface State {
   email?: string;
   password?: string;
-  username?: string;
+  username?: string | null;
   error?: string;
 }
 
 export function useRegister() {
   const [state, setState] = useState<State>({});
   const navigate = useNavigate();
+  const authState = useContext(AuthContext);
 
-  function setUser(username: string) {
+  function setUser(username?: string | null) {
     setState({ ...state, username });
   }
   function setEmail(email: string) {
@@ -37,17 +35,8 @@ export function useRegister() {
       return;
     }
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        state.email,
-        state.password
-      );
-      await updateProfile(userCredential.user, { displayName: state.username });
-      await setDoc(doc(db, "users", userCredential.user.uid), {
-        displayName: state.username,
-        email: state.email,
-      });
-      // Navigate to dashboard after successful registration
+      await authState?.newUserSignin(state.email, state.username, state.password);
+
       navigate("/");
     } catch (err) {
       setState({

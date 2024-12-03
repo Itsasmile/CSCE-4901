@@ -8,6 +8,7 @@ import Navbar from "./components/Navbar";
 import GamePage from "./pages/GamePage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ChangeName from "./pages/ChangeName";
 
 const router = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
   {
     path: "/register",
     element: <Register />,
+  },
+  {
+    path: "/change-name",
+    element: <ChangeName />,
   }
 ]);
 

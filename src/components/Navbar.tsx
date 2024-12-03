@@ -79,7 +79,7 @@ export default function Navbar(): ReactNode {
         </NavigationMenuList>
       </NavigationMenu>
       <div className="flex gap-2 justify-end">
-      <UserComponent user={user} />
+      <UserComponent authState={user} />
       <Button onClick={toggleDarkMode} variant={"ghost"}>
         <i className="bi bi-sun-fill text-2xl block dark:hidden" />
         <i className="bi bi-moon-fill text-2xl dark:block hidden" />

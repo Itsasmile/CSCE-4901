@@ -3,7 +3,8 @@ import { ref, uploadBytes, getDownloadURL, listAll, deleteObject } from 'firebas
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from "@/context/AuthContext";
 import { getStorage } from "firebase/storage"; // Import Firebase services
-import './ChangeProfile.css';
+import { Button } from "@/components/ui/button";
+//import './ChangeProfile.css';
 
 
 export default function ChangeProfile(): ReactNode {
@@ -30,7 +31,7 @@ export default function ChangeProfile(): ReactNode {
       setUploadError(null);
       if (user) {
         // Reference to the user's avatar folder
-        const userImagesRef = ref(storage, `avatars/${user.uid}`);
+        const userImagesRef = ref(storage, `avatars/${user}`);
         const listResponse = await listAll(userImagesRef);
 
         // Delete previous avatar if exists
@@ -40,7 +41,7 @@ export default function ChangeProfile(): ReactNode {
         }
 
         // Upload new avatar
-        const storageRef = ref(storage, `avatars/${user.uid}/${image.name}`);
+        const storageRef = ref(storage, `avatars/${user}/${image.name}`);
         await uploadBytes(storageRef, image);
         const downloadURL = await getDownloadURL(storageRef);
         setUploadSuccess(true);
@@ -56,23 +57,24 @@ export default function ChangeProfile(): ReactNode {
 
   return (
     
-    <div className="change-profile-container max-w-md mx-auto p-8 bg-white rounded-lg shadow-lg text-center">
-      <h1 className="text-3xl font-bold mb-6">Change Profile Picture</h1>
+    <div className="border border-border max-w-md mx-auto p-10 bg-background rounded-lg shadow-lg text-center">
+      <h1 className="text-3xl font-bold mb-1">Change Profile Picture</h1>
       <input type="file" onChange={handleImageChange} className="mt-4 p-2 border rounded-lg w-full" />
-      <button
+      <Button
         onClick={handleUpload}
-        className="bg-blue-500 text-white px-6 py-2 mt-4 rounded-lg hover:bg-blue-600"
+        className = "w-full mb-4"
       >
         Upload
-      </button>
-      {uploadError && <p className="text-red-500 mt-4">{uploadError}</p>}
-      {uploadSuccess && <p className="text-green-500 mt-4">Profile picture updated successfully!</p>}
-      <button
+      </Button>
+      
+      <Button
         onClick={() => navigate('/dashboard')}
-        className="bg-gray-500 text-white px-4 py-2 mt-6 rounded-lg hover:bg-gray-600"
+        className="w-full mb-2"
       >
         Back to Dashboard
-      </button>
+      </Button>
+      {uploadError && <p className="text-red-500">{uploadError}</p>}
+      {uploadSuccess && <p className="text-green-500">Profile picture updated successfully!</p>}
     </div>
   );
 }

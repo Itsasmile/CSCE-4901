@@ -1,25 +1,23 @@
-import { useState } from "react";
-import { signInWithEmailAndPassword, updateCurrentUser } from "firebase/auth";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../firebase"; // Import Firebase services
-import { User, updateProfile } from "firebase/auth";
+import { AuthContext } from "@/context/AuthContext";
 
 interface State {
   email?: string;
   password?: string;
   error?: string;
-  user?: User | undefined;
 }
 
 export function useLogin() {
   const [state, setState] = useState<State>({});
   const navigate = useNavigate();
+  const authState = useContext(AuthContext);
 
-  function setEmail(email: string) {
+  function enterEmail(email: string) {
     setState({ ...state, email });
   }
 
-  function setPassword(password: string) {
+  function enterPassword(password: string) {
     setState({ ...state, password });
   }
 
@@ -31,25 +29,16 @@ export function useLogin() {
       return;
     }
     try {
-      await signInWithEmailAndPassword(auth, state.email, state.password);
-      if (auth.currentUser) {
-        console.log("Current User:", auth.currentUser);
-        console.log("Current Display Name:", auth.currentUser.displayName);
-
-        // Update the user's display name for change profile.
-        const newDisplayName = "Updated Display Name"; // Replace with the desired display name
-        await updateProfile(auth.currentUser, { displayName: newDisplayName });
-        console.log("Updated Display Name:", auth.currentUser.displayName);
-      }
-      // Navigate to dashboard after successful login
+      await authState?.userSignIn(state.email, state.password);
       navigate("/");
     } catch (err) {
       setState({
         ...state,
         error: "Login failed. Please check your email and password.",
       });
+      console.error(err);
     }
   }
 
-  return { error: state.error, handleLogin, setEmail, setPassword };
+  return { error: state.error, handleLogin, enterEmail, enterPassword };
 }
