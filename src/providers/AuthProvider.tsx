@@ -50,25 +50,77 @@ export function AuthProvider({ children }: Props): ReactNode {
   }
 
   async function updateDisplayName(username: string) {
-    setAuthState({
-      ...authState,
-      loading: true,
-    });
+    const currentUser = auth.currentUser; // Use the most recent authenticated user
+    console.log("Updating display name. Current user:", currentUser);
 
-    await updateProfile(authState?.user!, { displayName: username });
+    if (!currentUser) {
+      console.error("User is null during display name update.");
+      throw new Error("User not authenticated. Cannot update display name.");
+    }
+
+    setAuthState((prevState) => ({
+      ...prevState,
+      loading: true,
+    }));
+
+    try {
+      await updateProfile(currentUser, { displayName: username });
+      console.log("Display name successfully updated to:", username);
+
+      // Reset loading state after update
+      setAuthState((prevState) => ({
+        ...prevState,
+        loading: false,
+        user: { ...prevState.user, displayName: username }, // Update user locally
+      }));
+    } catch (error) {
+      console.error("Failed to update display name:", error);
+
+      // Ensure loading is reset even if an error occurs
+      setAuthState((prevState) => ({
+        ...prevState,
+        loading: false,
+      }));
+
+      throw error;
+    }
   }
 
   async function updateProfilePic(photoURL: string) {
-    setAuthState({
-      ...authState,
-      loading: true,
-    });
+    const currentUser = auth.currentUser; // Use the most recent authenticated user
+    console.log("Updating profile picture. Current user:", currentUser);
 
-    if (!authState.user) {
-      throw new Error("User not found");
+    if (!currentUser) {
+      console.error("User is null during profile picture update.");
+      throw new Error("User not authenticated. Cannot update profile picture.");
     }
 
-    await updateProfile(authState?.user!, { photoURL: photoURL });
+    setAuthState((prevState) => ({
+      ...prevState,
+      loading: true,
+    }));
+
+    try {
+      await updateProfile(currentUser, { photoURL: photoURL });
+      console.log("Profile picture successfully updated to:", photoURL);
+
+      // Reset loading state after update and update user locally
+      setAuthState((prevState) => ({
+        ...prevState,
+        loading: false,
+        user: { ...prevState.user, photoURL }, // Update user locally
+      }));
+    } catch (error) {
+      console.error("Failed to update profile picture:", error);
+
+      // Ensure loading is reset even if an error occurs
+      setAuthState((prevState) => ({
+        ...prevState,
+        loading: false,
+      }));
+
+      throw error;
+    }
   }
 
   async function userSignIn(email: string, password: string) {
@@ -83,28 +135,24 @@ export function AuthProvider({ children }: Props): ReactNode {
   useEffect(() => {
     console.log("resubbed");
     const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
-      if (!firebaseUser) {
-        setAuthState({
-          ...authState,
+      setAuthState((prevState) => {
+        // Only update state if there's a meaningful change
+        if (prevState.user?.uid === firebaseUser?.uid && !prevState.loading) {
+          return prevState; // No change, avoid re-render
+        }
+
+        console.log("Updating auth state. FirebaseUser:", firebaseUser);
+        return {
+          ...prevState,
           user: firebaseUser,
-          loading: true,
-        });
-        console.log("Failed to find user");
-        return;
-      }
-
-      console.log("found user");
-
-      setAuthState({
-        ...authState,
-        user: firebaseUser,
-        loading: false,
+          loading: false,
+        };
       });
     });
 
     return () => {
-      unsubscribe();
       console.log("unsubbed");
+      unsubscribe();
     };
   }, []);
 

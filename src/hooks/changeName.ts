@@ -18,11 +18,27 @@ export function useChangeName() {
   async function handleNameChange(e: React.FormEvent<HTMLFormElement>) {
     e.stopPropagation();
     e.preventDefault();
+
+    console.log("handleNameChange called with username:", state.username);
     if (!state.username) {
       setState({ ...state, error: "Please enter a new name." });
       return;
     }
+
+    console.log(
+      "Checking user authentication. AuthState user:",
+      authState?.user
+    );
+    if (!authState?.user) {
+      setState({
+        ...state,
+        error: "User not authenticated. Please log in again.",
+      });
+      return;
+    }
+
     try {
+      console.log("Attempting to update display name to:", state.username);
       authState?.updateDisplayName!(state.username).then(() => {
         setState({
           ...state,
@@ -30,15 +46,15 @@ export function useChangeName() {
           error: undefined,
         });
       });
-
-      //navigate("/");
     } catch (err) {
+      console.error(err);
       setState({
         ...state,
         error: "Name change failed. Please try again later.",
       });
     }
   }
+
   return {
     success: state.success,
     error: state.error,
