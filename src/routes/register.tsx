@@ -3,22 +3,58 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRegister } from "@/hooks/useRegister";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 export const Route = createFileRoute("/register")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { error, handleRegister, setUser, setEmail, setPassword } =
+  const { error: globalError, handleRegister, setUser, setEmail, setPassword } =
     useRegister();
-    
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
+  const validateEmail = (value: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!value) {
+      return "Email is required.";
+    }
+    if (!emailRegex.test(value)) {
+      return "Please enter a valid email address.";
+    }
+    return "";
+  };
+
+  const validatePassword = (value: string) => {
+    if (!value) {
+      return "Password is required.";
+    }
+    if (value.length < 6) {
+      return "Password must be at least 6 characters long.";
+    }
+    return "";
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEmail(value);
+    setEmailError(validateEmail(value));
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setPassword(value);
+    setPasswordError(validatePassword(value));
+  };
 
   return (
     <div className="border-border flex justify-center items-center h-screen">
       <div className="border-border border bg-background p-8 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-3xl font-bold mb-6 text-center">Register</h2>
-        {error && <p className="text-red-500 mb-4">{error}</p>}
-        <form onSubmit={handleRegister}>
+        {globalError && <p className="text-red-500 mb-4">{globalError}</p>}
+        <form onSubmit={handleRegister} noValidate>
+          {/* Username */}
           <div className="mb-4">
             <Label htmlFor="name">Username</Label>
             <Input
@@ -28,34 +64,43 @@ function RouteComponent() {
               className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter your username"
               required
-            ></Input>
+            />
           </div>
+
+          {/* Email */}
           <div className="mb-4">
             <Label htmlFor="email">Email</Label>
             <Input
               type="email"
               id="email"
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={handleEmailChange}
+              className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 ${
+                emailError ? "border-red-500 focus:ring-red-500" : "focus:ring-blue-500"
+              }`}
               placeholder="Enter your email"
               required
-            ></Input>
+            />
+            {emailError && <p className="text-pink-600 text-sm mt-1">{emailError}</p>}
           </div>
-          <Label htmlFor="password">Password</Label>
+
+          {/* Password */}
           <div className="mb-4">
+            <Label htmlFor="password">Password</Label>
             <Input
               type="password"
               id="password"
-              minLength={6}
-              onChange={(e) => setPassword(e.target.value)}
-              className="peer w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={handlePasswordChange}
+              className={`peer w-full p-3 border rounded-lg focus:outline-none focus:ring-2 ${
+                passwordError ? "border-red-500 focus:ring-red-500" : "focus:ring-blue-500"
+              }`}
               placeholder="Enter a password"
+              minLength={6}
               required
-            ></Input>
-            <Label className="invisible peer-focus:peer-invalid:visible text-pink-600 text-sm">
-              Password must be at least 6 characters long.
-            </Label>
+            />
+            {passwordError && <p className="text-pink-600 text-sm mt-1">{passwordError}</p>}
           </div>
+
+          {/* Submit Button */}
           <Button type="submit" className="w-full">
             Register
           </Button>
