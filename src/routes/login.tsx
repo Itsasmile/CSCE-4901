@@ -40,11 +40,6 @@ function RouteComponent() {
             Login
           </Button>
         </form>
-        <div className="text-center mt-4">
-          <a href="#" className="text-blue-500 hover:underline">
-            Forgot Username / Password?
-          </a>
-        </div>
         <div className="text-center mt-6">
           <a href="/register" className="text-gray-700 hover:underline">
             Create your Account &rarr;

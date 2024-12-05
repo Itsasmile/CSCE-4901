@@ -3,37 +3,34 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRegister } from "@/hooks/useRegister";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { AuthContext } from "@/context/AuthContext";
 
 export const Route = createFileRoute("/register")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { error: globalError, handleRegister, setUser, setEmail, setPassword } =
-    useRegister();
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+  const { error: globalError, handleRegister, setUser, setEmail, setPassword } = useRegister();
+  const { user} = useContext(AuthContext);
+
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+
+  // Redirect when the user state changes and a user is signed in
+  useEffect(() => {
+    if (user) {
+      console.log("User signed in:", user);
+    }
+  }, [user]);
 
   const validateEmail = (value: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!value) {
-      return "Email is required.";
-    }
-    if (!emailRegex.test(value)) {
-      return "Please enter a valid email address.";
-    }
-    return "";
+    return value && emailRegex.test(value) ? null : "Please enter a valid email address.";
   };
 
   const validatePassword = (value: string) => {
-    if (!value) {
-      return "Password is required.";
-    }
-    if (value.length < 6) {
-      return "Password must be at least 6 characters long.";
-    }
-    return "";
+    return value && value.length >= 6 ? null : "Password must be at least 6 characters long.";
   };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,7 +50,15 @@ function RouteComponent() {
       <div className="border-border border bg-background p-8 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-3xl font-bold mb-6 text-center">Register</h2>
         {globalError && <p className="text-red-500 mb-4">{globalError}</p>}
-        <form onSubmit={handleRegister} noValidate>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!emailError && !passwordError) {
+              handleRegister(e);
+            }
+          }}
+          noValidate
+        >
           {/* Username */}
           <div className="mb-4">
             <Label htmlFor="name">Username</Label>
@@ -102,7 +107,7 @@ function RouteComponent() {
 
           {/* Submit Button */}
           <Button type="submit" className="w-full">
-            Register
+           Register
           </Button>
         </form>
       </div>

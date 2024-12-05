@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { AuthContext } from "@/context/AuthContext";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   deleteObject,
@@ -9,7 +8,7 @@ import {
   ref,
   uploadBytes,
 } from "firebase/storage";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { useChangeProfile } from "@/hooks/changeProfile";
 import { auth } from "@/firebase";
 

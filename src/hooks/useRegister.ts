@@ -35,22 +35,20 @@ export function useRegister() {
       return;
     }
     try {
-      await authState?.newUserSignin!(
-        state.email,
-        state.username,
-        state.password
-      );
+      await authState?.newUserSignin!(state.email, state.username, state.password);
 
+      // Redirect after successful registration
       navigate({ to: "/" });
+
     } catch (err) {
       setState({
         ...state,
-
         error: "Registration failed. Please try again later.",
       });
       console.error(err);
     }
   }
+
   return {
     error: state.error,
     handleRegister,
