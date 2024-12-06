@@ -31,6 +31,7 @@ function Home(): ReactNode {
     selectCategory,
     setCurrentPage,
     setSearchTerm,
+    getFilteredGames,
   } = useHomeState();
 
   const gamesPerPage = 6;
@@ -74,7 +75,7 @@ function Home(): ReactNode {
 
       <article className="main-content container mx-auto py-10">
         <section className="flex flex-wrap justify-between">
-          {allGames
+          {getFilteredGames()
             .slice((currentPage - 1) * gamesPerPage, currentPage * gamesPerPage)
             .map((game) => (
               <GameComponent key={game.id} game={game} />
