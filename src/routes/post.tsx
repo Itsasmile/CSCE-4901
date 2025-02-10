@@ -1,158 +1,233 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { FormEvent, useState } from "react";
-import { collection, addDoc } from "firebase/firestore";
-import { db } from "@/firebase"; // Import Firebase services
+import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { gamesTables } from "@/db/schema";
+import { db } from "@/db-connection";
+import { MultiSelect } from "@/components/ui/multi-select";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const Route = createFileRoute("/post")({
   component: RouteComponent,
 });
+const gameCategories = [
+  "Action RPG",
+  "Survival Horror",
+  "Metroidvania",
+  "Roguelike",
+  "Tower Defense",
+  "Battle Royale",
+  "City Builder",
+  "Farming Simulator",
+  "Turn-Based Strategy",
+  "Card Battler",
+  "Hack and Slash",
+  "Rhythm Game",
+  "Soulslike",
+  "Text-Based Adventure",
+  "MMORPG",
+  "Sandbox",
+  "Bullet Hell",
+  "Stealth",
+  "Party Game",
+  "Auto Battler",
+];
+
+const accessibilityOptions = [
+  "Colorblind Modes",
+  "High Contrast Mode",
+  "Text Size Adjustments",
+  "Customizable UI",
+  "Screen Reader Support",
+  "No Flashing Effects",
+  "Subtitles & Closed Captions",
+  "Speaker Identification in Subtitles",
+  "Visual Sound Indicators",
+  "Customizable Subtitle Backgrounds",
+  "Rebindable Controls",
+  "One-Handed Mode",
+  "Toggle vs. Hold Options",
+  "Assist Modes",
+  "Adaptive Controller Support",
+  "Motion Controls Sensitivity",
+  "Difficulty Adjustments",
+  "Game Speed Control",
+  "Skip Quick-Time Events (QTEs)",
+  "Guided Mode",
+  "Customizable HUD",
+  "Text-to-Speech & Speech-to-Text",
+];
+
+const platforms = [
+  "PC",
+  "PlayStation 5",
+  "Xbox Series X/S",
+  "Nintendo Switch",
+  "Mobile",
+  "PlayStation 4",
+  "Xbox One",
+  "Web Browser",
+];
 
 function RouteComponent() {
-  const [name, setName] = useState("");
-  const [category, setCategory] = useState("");
+  const [title, setTitle] = useState("");
+  const [categories, setCategories] = useState<string[]>([]);
   const [platform, setPlatform] = useState("");
-  const [rating, setRating] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [rating, setRating] = useState(0);
+  const [image, setImage] = useState<File>();
   const [description, setDescription] = useState("");
-  const [description2, setDescription2] = useState("");
-  const [accessibility, setAccessibility] = useState("");
+  const [shortDescription, setShortDescription] = useState("");
+  const [accessibility, setAccessibility] = useState<string[]>([]);
   const navigate = useNavigate();
 
-  const handlePostGame = async (e:FormEvent) => {
+  const handlePostGame = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await addDoc(collection(db, "games"), {
-        name,
-        category,
+      const game: typeof gamesTables.$inferInsert = {
+        title,
+        categories,
         platform,
         rating,
-        image_url: imageUrl,
+        image: image
+          ? `data:image/png;base64,${btoa(String.fromCharCode(...new Uint8Array(await image.arrayBuffer())))}`
+          : undefined,
         description,
-        description2,
+        short_description: shortDescription,
         accessibility,
-      });
-      navigate({to:"/"});
+      };
+
+      await db.insert(gamesTables).values(game);
+      navigate({ to: "/" });
     } catch (error) {
       console.error("Error adding game:", error);
     }
   };
 
+  const uploadImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setImage(e.target.files[0]);
+    }
+  };
+
   return (
-    <div className="border-border flex justify-center items-baseline mt-4 h-screen">
-      <div className="border-border border bg-background p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-3xl font-bold mb-6 text-center">Post a New Game</h2>
-        <form onSubmit={handlePostGame}>
-          <div className="mb-4">
-            <Label className="block text-gray-700 mb-2" htmlFor="name">
-              Game Name
-            </Label>
+    <Card className="container mx-auto py-10 w-2/4 my-10">
+      <CardHeader>
+        <CardTitle className="text-3xl font-bold text-center">
+          Post a New Game
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handlePostGame} className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="name">Game Name</Label>
             <Input
-              type="text"
               id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="mt-4 p-2 border rounded-lg w-full"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
               required
             />
           </div>
-          <div className="mb-4">
-            <Label className="block text-gray-700 mb-2" htmlFor="category">
-              Category
-            </Label>
+
+          <div className="space-y-2">
+            <Label htmlFor="category">Category</Label>
+            <MultiSelect
+              selected={categories.map((x) => ({ label: x, value: x }))}
+              onChange={(e) => setCategories(e.map((x) => x.value))}
+              options={gameCategories.map((x) => ({ label: x, value: x }))}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="platform">Platform</Label>
+            <Select onValueChange={setPlatform} value={platform}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a platform" />
+              </SelectTrigger>
+              <SelectContent>
+                {platforms.map((p) => (
+                  <SelectItem key={p} value={p}>
+                    {p}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="rating">Rating</Label>
+            <Select
+              onValueChange={(value) => setRating(Number(value))}
+              value={rating.toString()}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a rating" />
+              </SelectTrigger>
+              <SelectContent>
+                {[1, 2, 3, 4, 5].map((r) => (
+                  <SelectItem key={r} value={r.toString()}>
+                    {r} Star{r !== 1 ? "s" : ""}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="image">Image</Label>
             <Input
-              type="text"
-              id="category"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="mt-4 p-2 border rounded-lg w-full"
-              required
+              id="image"
+              type="file"
+              onChange={uploadImage}
+              accept="image/*"
             />
           </div>
-          <div className="mb-4">
-            <Label className="block text-gray-700 mb-2" htmlFor="platform">
-              Platform
-            </Label>
-            <Input
-              type="text"
-              id="platform"
-              value={platform}
-              onChange={(e) => setPlatform(e.target.value)}
-              className="mt-4 p-2 border rounded-lg w-full"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <Label className="block text-gray-700 mb-2" htmlFor="rating">
-              Rating
-            </Label>
-            <Input
-              type="number"
-              id="rating"
-              value={rating}
-              onChange={(e) => setRating(e.target.value)}
-              className="mt-4 p-2 border rounded-lg w-full"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <Label className="block text-gray-700 mb-2" htmlFor="imageUrl">
-              Image URL
-            </Label>
-            <Input
-              type="text"
-              id="imageUrl"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              className="mt-4 p-2 border rounded-lg w-full"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <Label className="block text-gray-700 mb-2" htmlFor="description">
-              Description
-            </Label>
-            <textarea
+
+          <div className="space-y-2">
+            <Label htmlFor="description">Description</Label>
+            <Textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="mt-4 p-2 border rounded-lg w-full"
               required
             />
           </div>
-          <div className="mb-4">
-            <Label className="block text-gray-700 mb-2" htmlFor="description2">
-              Additional Description
-            </Label>
-            <textarea
-              id="description2"
-              value={description2}
-              onChange={(e) => setDescription2(e.target.value)}
-              className="mt-4 p-2 border rounded-lg w-full"
+
+          <div className="space-y-2">
+            <Label htmlFor="shortDescription">Short Description</Label>
+            <Textarea
+              id="shortDescription"
+              value={shortDescription}
+              onChange={(e) => setShortDescription(e.target.value)}
             />
           </div>
-          <div className="mb-4">
-            <Label className="block text-gray-700 mb-2" htmlFor="accessibility">
-              Accessibility
-            </Label>
-            <textarea
-              id="accessibility"
-              value={accessibility}
-              onChange={(e) => setAccessibility(e.target.value)}
-              className="mt-4 p-2 border rounded-lg w-full"
+
+          <div className="space-y-2">
+            <Label htmlFor="accessibility">Accessibility</Label>
+            <MultiSelect
+              selected={accessibility.map((x) => ({ label: x, value: x }))}
+              onChange={(e) => setAccessibility(e.map((x) => x.value))}
+              options={accessibilityOptions.map((x) => ({
+                label: x,
+                value: x,
+              }))}
             />
           </div>
-          <Button
-            type="submit"
-            className="w-full mb-2"
-          >
+
+          <Button type="submit" className="w-full">
             Post Game
           </Button>
         </form>
-      </div>
-      </div>
+      </CardContent>
+    </Card>
   );
 }

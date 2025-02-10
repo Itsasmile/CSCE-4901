@@ -6,18 +6,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { AuthState } from "@/lib/types";
 import { useNavigate } from "@tanstack/react-router";
-import { Skeleton } from "./ui/skeleton";
+import { User } from "@/lib/types";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Props {
-  authState?: AuthState | null | undefined;
+  user?: User;
 }
 
-export default function UserComponent({ authState }: Props): ReactNode {
+export default function UserComponent({ user }: Props): ReactNode {
   const navigate = useNavigate();
+  const { userSignOut } = useAuth();
 
-  if (!authState?.user)
+  if (!user)
     return (
       <article className="flex gap-2.5 ml-auto">
         <Button onClick={() => navigate({ to: "/login" })}>Login</Button>
@@ -27,7 +28,7 @@ export default function UserComponent({ authState }: Props): ReactNode {
 
   const handleLogout = async () => {
     try {
-      await authState?.signOut!();
+      await userSignOut();
       navigate({ to: "/login" });
     } catch (error) {
       console.error("Error logging out:", error);
@@ -36,47 +37,33 @@ export default function UserComponent({ authState }: Props): ReactNode {
 
   return (
     <div className="flex gap-2.5 relative profile-container">
-      {authState.loading ? (
-        <div className="flex items-center space-x-4">
-          <Skeleton className="h-12 w-12 rounded-full" />
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-[50px]" />
-            <Skeleton className="h-4 w-[50px]" />
-          </div>
-        </div>
-      ) : (
-        <>
-          <img
-            src={authState.user!.photoURL || "https://via.placeholder.com/150"}
-            alt="User Avatar"
-            className="rounded-full"
-            style={{ width: "40px", height: "40px" }}
-          />
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button>{authState.user?.displayName}</Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem
-                onClick={() => navigate({ to: "/change-profile" })}
-              >
-                Change Profile Picture
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => navigate({ to: "/change-name" })}
-              >
-                Change Name
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate({ to: "/post" })}>
-                Create Post
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleLogout}>
-                Log Out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </>
-      )}
+      <>
+        <img
+          src={user.profilePicture || "https://placehold.co/400"}
+          alt="User Avatar"
+          className="rounded-full"
+          style={{ width: "40px", height: "40px" }}
+        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button>{user?.displayName || user?.username}</Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem
+              onClick={() => navigate({ to: "/change-profile" })}
+            >
+              Change Profile Picture
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate({ to: "/change-name" })}>
+              Change Name
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate({ to: "/post" })}>
+              Create Post
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>Log Out</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </>
     </div>
   );
 }

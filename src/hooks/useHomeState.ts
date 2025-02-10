@@ -1,7 +1,7 @@
+import { db } from "@/db-connection";
+import { gamesTables } from "@/db/schema";
 import { Game } from "@/types";
 import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../firebase"; // Import Firebase services
 
 export interface HomeState {
   allGames: Game[];
@@ -27,31 +27,35 @@ export function useHomeState() {
   function getFilteredGames() {
     const lowerCaseSearchTerm = state.searchTerm?.toLowerCase() || "";
     const filteredGames = state.allGames.filter((game) => {
-      const name = game.name.toLowerCase();
-      const category = game.category.toLowerCase();
+      const name = game.title.toLowerCase();
+      const categories = game.categories;
       const platform = game.platform.toLowerCase();
-      const accessibility = game.accessibility?.toLowerCase();
+      const accessibility = game.accessibility;
 
       if (state.selectedCategory === "All") {
         return (
           name.includes(lowerCaseSearchTerm) ||
-          category.toLowerCase().includes(lowerCaseSearchTerm) ||
+          categories.includes(lowerCaseSearchTerm) ||
           platform.toLowerCase().includes(lowerCaseSearchTerm) ||
-          accessibility?.toLowerCase().includes(lowerCaseSearchTerm)
+          accessibility.includes(lowerCaseSearchTerm)
         );
       }
 
       if (state.selectedCategory === "Name") {
         return name.toLowerCase().includes(lowerCaseSearchTerm);
       } else if (state.selectedCategory === "Category") {
-        return category.toLowerCase().includes(lowerCaseSearchTerm);
+        return categories.some((x) =>
+          x.toLowerCase().includes(lowerCaseSearchTerm)
+        );
       } else if (state.selectedCategory === "Platform") {
         return platform.toLowerCase().includes(lowerCaseSearchTerm);
       } else if (
         state.selectedCategory === "Accessibility" &&
         game.accessibility
       ) {
-        return accessibility.toLowerCase().includes(lowerCaseSearchTerm);
+        return accessibility.some((x) =>
+          x.toLowerCase().includes(lowerCaseSearchTerm)
+        );
       }
 
       return false;
@@ -62,20 +66,12 @@ export function useHomeState() {
 
   const fetchGames = async () => {
     try {
-      const gamesCollection = collection(db, "games");
-      const gamesSnapshot = await getDocs(gamesCollection);
-      const gamesList = gamesSnapshot.docs.map(
-        (doc) =>
-          ({
-            id: doc.id,
-            ...doc.data(),
-          }) as Game
-      );
+      const games = await db.select().from(gamesTables);
 
       setState({
         ...state,
-        allGames: gamesList,
-        totalPages: Math.ceil(gamesList.length / 6),
+        allGames: games.map((x) => x as unknown as Game),
+        totalPages: Math.ceil(games.length / 6),
       });
     } catch (error) {
       console.error("Error fetching games:", error);

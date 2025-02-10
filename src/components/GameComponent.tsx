@@ -1,47 +1,36 @@
 import { ReactNode } from "react";
 import { Game } from "@/types";
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
-import { useNavigate } from "@tanstack/react-router";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Link } from "@tanstack/react-router";
+import { Badge } from "./ui/badge";
+import { StarRating } from "./star-rating";
+import { GameImage } from "./game-image";
 
 interface Props {
   game: Game;
 }
 
 export default function GameComponent({ game }: Props): ReactNode {
-  const navigate = useNavigate();
-
   return (
-    <div key={game.id} className="w-1/3 p-4">
-      <Card className="h-[28rem] flex flex-col justify-between">
-        <CardHeader>
-          <CardTitle>{game.name}</CardTitle>
-          <img
-            src={game.image_url}
-            alt={game.name}
-            className="mb-4 cursor-pointer"
-            onClick={() => navigate({ to: `/game/${game.id}` })}
-            style={{
-              width: "100%",
-              height: "200px",
-              objectFit: "cover",
-            }}
-          />
-          <CardDescription className="font-roboto text-base font-normal text-foreground leading-snug my-2">
-            {game.description}
-          </CardDescription>
+    <Link key={game.id} className="p-4" href={`/game/${game.id}`}>
+      <Card className="overflow-hidden h-full flex flex-col">
+        <CardHeader className="p-0">
+          <GameImage src={game.image} alt={`Screenshot from ${game.title}`} />
         </CardHeader>
-        <CardFooter className="text-sm font-normal flex gap-2.5">
-          <p>Category: {game.category}</p>
-          <p>Platform: {game.platform}</p>
-          <p>Rating: {game.rating}</p>
-        </CardFooter>
+        <CardContent className="p-4 space-y-3 flex-1 flex flex-col">
+          <CardTitle className="line-clamp-1">{game.title}</CardTitle>
+          <p className="text-sm text-muted-foreground line-clamp-3 flex-1">
+            {game.description}
+          </p>
+          <div className="flex items-center justify-between">
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="secondary">{game.categories[0]}</Badge>
+              <Badge variant="outline">{game.platform}</Badge>
+            </div>
+            <StarRating rating={game.rating} />
+          </div>
+        </CardContent>
       </Card>
-    </div>
+    </Link>
   );
 }

@@ -1,6 +1,6 @@
-import { AuthContext } from "@/context/AuthContext";
 import { useNavigate } from "@tanstack/react-router";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
+import { useAuth } from "./useAuth";
 
 interface State {
   email?: string;
@@ -12,7 +12,7 @@ interface State {
 export function useRegister() {
   const [state, setState] = useState<State>({});
   const navigate = useNavigate();
-  const authState = useContext(AuthContext);
+  const { userSignUp } = useAuth();
 
   function setUser(username?: string | null) {
     setState({ ...state, username });
@@ -35,11 +35,10 @@ export function useRegister() {
       return;
     }
     try {
-      await authState?.newUserSignin!(state.email, state.username, state.password);
+      await userSignUp(state.email, state.username, state.password);
 
       // Redirect after successful registration
       navigate({ to: "/" });
-
     } catch (err) {
       setState({
         ...state,

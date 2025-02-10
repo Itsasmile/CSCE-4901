@@ -1,11 +1,12 @@
 export interface Game {
-  id: string;
-  name: string;
-  rating: string;
-  category: string;
+  id: number;
+  title: string;
+  rating: number;
+  categories: string[];
   platform: string;
-  accessibility: string;
+  accessibility: string[];
   description: string;
-  description2: string;
-  image_url: string;
+  short_description?: string;
+  image: string;
+  createdAt?: string;
 }

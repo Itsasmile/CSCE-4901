@@ -14,6 +14,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as RegisterImport } from './routes/register'
 import { Route as PostImport } from './routes/post'
 import { Route as LoginImport } from './routes/login'
+import { Route as FaqsImport } from './routes/faqs'
 import { Route as ChangeProfileImport } from './routes/change-profile'
 import { Route as ChangeNameImport } from './routes/change-name'
 import { Route as IndexImport } from './routes/index'
@@ -36,6 +37,12 @@ const PostRoute = PostImport.update({
 const LoginRoute = LoginImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const FaqsRoute = FaqsImport.update({
+  id: '/faqs',
+  path: '/faqs',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -88,6 +95,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChangeProfileImport
       parentRoute: typeof rootRoute
     }
+    '/faqs': {
+      id: '/faqs'
+      path: '/faqs'
+      fullPath: '/faqs'
+      preLoaderRoute: typeof FaqsImport
+      parentRoute: typeof rootRoute
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -125,6 +139,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/change-name': typeof ChangeNameRoute
   '/change-profile': typeof ChangeProfileRoute
+  '/faqs': typeof FaqsRoute
   '/login': typeof LoginRoute
   '/post': typeof PostRoute
   '/register': typeof RegisterRoute
@@ -135,6 +150,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/change-name': typeof ChangeNameRoute
   '/change-profile': typeof ChangeProfileRoute
+  '/faqs': typeof FaqsRoute
   '/login': typeof LoginRoute
   '/post': typeof PostRoute
   '/register': typeof RegisterRoute
@@ -146,6 +162,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/change-name': typeof ChangeNameRoute
   '/change-profile': typeof ChangeProfileRoute
+  '/faqs': typeof FaqsRoute
   '/login': typeof LoginRoute
   '/post': typeof PostRoute
   '/register': typeof RegisterRoute
@@ -158,6 +175,7 @@ export interface FileRouteTypes {
     | '/'
     | '/change-name'
     | '/change-profile'
+    | '/faqs'
     | '/login'
     | '/post'
     | '/register'
@@ -167,6 +185,7 @@ export interface FileRouteTypes {
     | '/'
     | '/change-name'
     | '/change-profile'
+    | '/faqs'
     | '/login'
     | '/post'
     | '/register'
@@ -176,6 +195,7 @@ export interface FileRouteTypes {
     | '/'
     | '/change-name'
     | '/change-profile'
+    | '/faqs'
     | '/login'
     | '/post'
     | '/register'
@@ -187,6 +207,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ChangeNameRoute: typeof ChangeNameRoute
   ChangeProfileRoute: typeof ChangeProfileRoute
+  FaqsRoute: typeof FaqsRoute
   LoginRoute: typeof LoginRoute
   PostRoute: typeof PostRoute
   RegisterRoute: typeof RegisterRoute
@@ -197,6 +218,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ChangeNameRoute: ChangeNameRoute,
   ChangeProfileRoute: ChangeProfileRoute,
+  FaqsRoute: FaqsRoute,
   LoginRoute: LoginRoute,
   PostRoute: PostRoute,
   RegisterRoute: RegisterRoute,
@@ -216,6 +238,7 @@ export const routeTree = rootRoute
         "/",
         "/change-name",
         "/change-profile",
+        "/faqs",
         "/login",
         "/post",
         "/register",
@@ -230,6 +253,9 @@ export const routeTree = rootRoute
     },
     "/change-profile": {
       "filePath": "change-profile.tsx"
+    },
+    "/faqs": {
+      "filePath": "faqs.tsx"
     },
     "/login": {
       "filePath": "login.tsx"

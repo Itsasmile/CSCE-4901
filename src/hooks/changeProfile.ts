@@ -1,5 +1,5 @@
-import { AuthContext } from "@/context/AuthContext";
-import { useContext, useState } from "react";
+import { useState } from "react";
+import { useAuth } from "./useAuth";
 
 interface State {
   error?: string;
@@ -8,10 +8,10 @@ interface State {
 
 export function useChangeProfile() {
   const [state, setState] = useState<State>({});
-  const authState = useContext(AuthContext);
+  const { updateProfilePic } = useAuth();
 
-  async function handleProfileChange(url?: string) {
-    if (!url) {
+  async function handleProfileChange(mimeType: string, buffer?: ArrayBuffer) {
+    if (!buffer) {
       setState({
         ...state,
         error:
@@ -21,7 +21,9 @@ export function useChangeProfile() {
     }
 
     try {
-      await authState?.updateProfilePic(url);
+      await updateProfilePic(
+        `data:${mimeType};base64,${btoa(String.fromCharCode(...new Uint8Array(buffer)))}`
+      );
       setState({
         ...state,
         success: "Picture uploaded successfully.",

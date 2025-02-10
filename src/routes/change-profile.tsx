@@ -1,16 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import {
-  deleteObject,
-  getDownloadURL,
-  getStorage,
-  listAll,
-  ref,
-  uploadBytes,
-} from "firebase/storage";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useChangeProfile } from "@/hooks/changeProfile";
-import { auth } from "@/firebase";
+import { AuthContext } from "@/context/AuthContext";
 
 export const Route = createFileRoute("/change-profile")({
   component: RouteComponent,
@@ -19,9 +11,10 @@ export const Route = createFileRoute("/change-profile")({
 function RouteComponent() {
   const [image, setImage] = useState<File | null>(null);
   const navigate = useNavigate();
-  const storage = getStorage();
   const { success, error, handleProfileChange } = useChangeProfile();
-  const user = auth.currentUser;
+  const authState = useContext(AuthContext);
+
+  const user = authState?.user;
 
   const uploadProfile = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -37,25 +30,7 @@ function RouteComponent() {
     try {
       if (!user) return;
 
-      // Reference to the user's avatar folder
-      const userImagesRef = ref(storage, `avatars/${user.uid}`);
-      const listResponse = await listAll(userImagesRef);
-
-      // Delete previous avatar if exists
-      if (listResponse.items.length > 0) {
-        const previousImageRef = listResponse.items[0];
-        await deleteObject(previousImageRef);
-      }
-
-      // Upload new avatar
-      const storageRef = ref(
-        storage,
-        `avatars/${user.uid}/${image.name}`
-      );
-      await uploadBytes(storageRef, image);
-      const photoURL = await getDownloadURL(storageRef);
-      await handleProfileChange(photoURL);
-      console.log("File available at", photoURL);
+      await handleProfileChange(image.type, await image.arrayBuffer());
     } catch (error) {
       console.error("Error uploading image:", error);
     }

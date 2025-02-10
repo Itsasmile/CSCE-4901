@@ -1,4 +1,10 @@
-import { AuthState } from "@/lib/types";
-import { createContext } from "react";
+import { User } from "@/lib/types";
+import { createContext, Dispatch, SetStateAction } from "react";
 
-export const AuthContext = createContext<AuthState>({ loading: true });
+export const AuthContext = createContext<
+  | {
+      user: User | undefined;
+      setUser: Dispatch<SetStateAction<User | undefined>>;
+    }
+  | undefined
+>(undefined);

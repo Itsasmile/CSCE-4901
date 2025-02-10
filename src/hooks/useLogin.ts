@@ -1,6 +1,6 @@
-import { useContext, useState } from "react";
-import { AuthContext } from "@/context/AuthContext";
+import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { useAuth } from "./useAuth";
 
 interface State {
   email?: string;
@@ -11,7 +11,7 @@ interface State {
 export function useLogin() {
   const [state, setState] = useState<State>({});
   const navigate = useNavigate();
-  const authState = useContext(AuthContext);
+  const { userSignIn } = useAuth();
 
   function enterEmail(email: string) {
     setState({ ...state, email });
@@ -29,7 +29,7 @@ export function useLogin() {
       return;
     }
     try {
-      await authState?.userSignIn!(state.email, state.password);
+      await userSignIn(state.email, state.password);
       navigate({ to: "/" });
     } catch (err) {
       setState({

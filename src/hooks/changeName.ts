@@ -1,5 +1,5 @@
-import { AuthContext } from "@/context/AuthContext";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
+import { useAuth } from "./useAuth";
 
 interface State {
   username?: string;
@@ -9,7 +9,7 @@ interface State {
 
 export function useChangeName() {
   const [state, setState] = useState<State>({});
-  const authState = useContext(AuthContext);
+  const { updateDisplayName } = useAuth();
 
   function setName(username: string) {
     setState({ ...state, username });
@@ -25,26 +25,14 @@ export function useChangeName() {
       return;
     }
 
-    console.log(
-      "Checking user authentication. AuthState user:",
-      authState?.user
-    );
-    if (!authState?.user) {
-      setState({
-        ...state,
-        error: "User not authenticated. Please log in again.",
-      });
-      return;
-    }
-
     try {
       console.log("Attempting to update display name to:", state.username);
-      authState?.updateDisplayName!(state.username).then(() => {
-        setState({
-          ...state,
-          success: "Name updated successfully.",
-          error: undefined,
-        });
+      await updateDisplayName(state.username);
+
+      setState({
+        ...state,
+        success: "Name updated successfully.",
+        error: undefined,
       });
     } catch (err) {
       console.error(err);
