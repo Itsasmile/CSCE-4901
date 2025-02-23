@@ -1,8 +1,9 @@
+import { useState, useContext } from "react";
 import { GameDescription } from "@/components/GameDescription";
 import { ReviewSection } from "@/components/ReviewSection";
 import { db } from "@/db-connection";
-import { gamesTables } from "@/db/schema";
-
+import { gamesTables, reviewsTables } from "@/db/schema";
+import { AuthContext } from "@/context/AuthContext";
 import { Game } from "@/types";
 import { createFileRoute } from "@tanstack/react-router";
 import { eq } from "drizzle-orm";
@@ -20,8 +21,13 @@ export const Route = createFileRoute("/game/$gameId")({
           .where(eq(gamesTables.id, Number.parseInt(params.gameId)))
       )[0];
 
+      const rawReviews = await db
+        .select()
+        .from(reviewsTables)
+        .where(eq(reviewsTables.gameId, Number.parseInt(params.gameId)));
+
       if (game) {
-        return game as unknown as Game;
+        return { game: game as unknown as Game, reviews: rawReviews };
       } else {
         console.error("Game not found");
       }
@@ -39,55 +45,97 @@ function Loading() {
   return <p>Loading...</p>;
 }
 
-const reviews = [
-  {
-    id: 1,
-    author: "SpaceGamer42",
-    avatar: "/placeholder.svg?height=40&width=40",
-    content:
-      "Absolutely mind-blowing! The attention to detail in the alien worlds is incredible. I've spent countless hours exploring and still feel like I've only scratched the surface.",
-    rating: 5,
-  },
-  {
-    id: 2,
-    author: "GalacticQueen",
-    avatar: "/placeholder.svg?height=40&width=40",
-    content:
-      "The story is engaging and the character development is top-notch. However, I found some of the later levels a bit repetitive. Still, it's a solid game overall.",
-    rating: 4,
-  },
-  {
-    id: 3,
-    author: "NebulaNavigator",
-    avatar: "/placeholder.svg?height=40&width=40",
-    content:
-      "Cosmic Explorers sets a new standard for space exploration games. The physics engine is incredibly realistic, and the multiplayer mode is a blast with friends!",
-    rating: 5,
-  },
-];
-
 function RouteComponent() {
-  const game = Route.useLoaderData();
-  const date = new Date();
+  const data = Route.useLoaderData();
+  const authState = useContext(AuthContext);
+  const user = authState?.user;
 
-  if (!game) {
+  const [content, setContent] = useState("");
+  const [rating, setRating] = useState(5);
+  const [reviews, setReviews] = useState(data?.reviews || []);
+
+  if (!data?.game) {
     return <div>No game found</div>;
   }
+
+  const handlePostReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) {
+      alert("You need to be logged in to post a review.");
+      return;
+    }
+
+    try {
+      const newReview = {
+        authorId: user.id,
+        content,
+        rating,
+        gameId: data.game.id,
+        timestamp: new Date().toISOString(),
+      };
+
+      await db.insert(reviewsTables).values(newReview);
+
+      setReviews((prevReviews) => [...prevReviews, newReview]);
+      setContent("");
+      setRating(5);
+    } catch (error) {
+      console.error("Error posting review:", error);
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
       <GameDescription
-        accessibility={game.accessibility}
-        categories={game.categories}
-        description={game.description}
+        accessibility={data.game.accessibility}
+        categories={data.game.categories}
+        description={data.game.description}
         developer={"Some Developer"}
-        genre={game.categories[0]}
-        imageUrl={game.image}
-        rating={game.rating}
-        releaseDate={date.toLocaleDateString()}
-        title={game.title}
+        genre={data.game.categories[0]}
+        imageUrl={data.game.image}
+        rating={data.game.rating}
+        releaseDate={new Date().toLocaleDateString()}
+        title={data.game.title}
       />
-      <ReviewSection reviews={reviews} />
+
+      <h2 className="text-xl font-bold mb-4">Reviews</h2>
+      {Array.isArray(reviews) && reviews.length > 0 ? (
+        <ReviewSection reviews={reviews} />
+      ) : (
+        <p>No reviews available for this game.</p>
+      )}
+
+      {/* Review Form */}
+      {user && (
+        <form onSubmit={handlePostReview} className="mt-4 p-4 border rounded-lg">
+          <h3 className="text-lg font-semibold mb-2">Write a Review</h3>
+          <textarea
+            className="w-full p-2 border rounded-lg"
+            placeholder="Write your review here..."
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            required
+          />
+          <div className="flex items-center gap-2 mt-2">
+            <label className="font-semibold">Rating:</label>
+            <input
+              type="number"
+              min="1"
+              max="5"
+              value={rating}
+              onChange={(e) => setRating(Number(e.target.value))}
+              className="border rounded px-2 py-1 w-16"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+          >
+            Post Review
+          </button>
+        </form>
+      )}
     </div>
   );
 }

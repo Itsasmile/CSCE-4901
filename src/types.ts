@@ -10,3 +10,13 @@ export interface Game {
   image: string;
   createdAt?: string;
 }
+
+export interface Review {
+  id: number;
+  gameId: number; // Ensure it's gameId, not game_id
+  authorId: number;
+  content: string | null;
+  rating: number;
+  createdAt: string;
+  avatar?: string; // Optional, if not in DB
+}
