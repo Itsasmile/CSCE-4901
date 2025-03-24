@@ -3,7 +3,7 @@ import { db } from "@/db-connection";
 import { usersTable } from "@/db/schema";
 import { createAccount, signIn } from "@/lib/utils";
 import { eq } from "drizzle-orm";
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useEffect } from "react";
 
 export function useAuth() {
   const authState = useContext(AuthContext);
@@ -16,6 +16,8 @@ export function useAuth() {
 
   async function userSignOut() {
     authState?.setUser(undefined);
+    localStorage.removeItem("user");
+    localStorage.removeItem("password");
   }
 
   const updateDisplayName = useCallback(
@@ -63,12 +65,23 @@ export function useAuth() {
     [authState]
   );
 
+  useEffect(() => {
+    const email = localStorage.getItem("user");
+    const password = localStorage.getItem("password");
+    signIn(email!, password!).then((user) => {
+      if (!user) throw new Error("Failed to signin user");
+      authState!.setUser(user);
+    });
+  }, []);
+
   async function userSignIn(email: string, password: string) {
     const user = await signIn(email, password);
 
     if (!user) throw new Error("Failed to signin user");
 
     authState!.setUser(user);
+    localStorage.setItem("user", email);
+    localStorage.setItem("password", password);
   }
 
   return {

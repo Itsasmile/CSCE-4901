@@ -22,6 +22,7 @@ export const reviewsTables = sqliteTable("reviews", {
   createdAt: text("timestamp")
     .notNull()
     .default(sql`(current_timestamp)`),
+  avatar: text(),
 });
 
 export const gamesTables = sqliteTable("games", {
