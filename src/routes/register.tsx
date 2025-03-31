@@ -6,13 +6,15 @@ import { Button } from "@/components/ui/button";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/context/AuthContext";
 
+
+
 export const Route = createFileRoute("/register")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
   const { error: globalError, handleRegister, setUser, setEmail, setPassword } = useRegister();
-  const { user} = useContext(AuthContext);
+  const user = useContext(AuthContext);
 
   const [emailError, setEmailError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);

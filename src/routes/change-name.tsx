@@ -3,9 +3,6 @@ import { useChangeName } from "@/hooks/changeName";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { useContext } from "react";
-import { AuthContext } from "@/context/AuthContext";
-import { auth } from "@/firebase";
 
 export const Route = createFileRoute("/change-name")({
   component: RouteComponent,
@@ -13,7 +10,6 @@ export const Route = createFileRoute("/change-name")({
 
 function RouteComponent() {
   const { success, error, handleNameChange, setName } = useChangeName();
-  const { loading } = useContext(AuthContext);
   return (
     <div className="border-border flex justify-center items-baseline mt-4 h-screen">
       <div className="border-border border bg-background p-8 rounded-lg shadow-lg w-full max-w-md">
@@ -32,11 +28,9 @@ function RouteComponent() {
               required
             ></Input>
           </div>
-          {!loading && (
-            <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full">
               Change Name
             </Button>
-          )}
         </form>
       </div>
     </div>
