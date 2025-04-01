@@ -11,6 +11,31 @@ export interface HomeState {
   totalPages: number;
 }
 
+const accessibilityOptions = [
+  "Colorblind Modes",
+  "High Contrast Mode",
+  "Text Size Adjustments",
+  "Customizable UI",
+  "Screen Reader Support",
+  "No Flashing Effects",
+  "Subtitles & Closed Captions",
+  "Speaker Identification in Subtitles",
+  "Visual Sound Indicators",
+  "Customizable Subtitle Backgrounds",
+  "Rebindable Controls",
+  "One-Handed Mode",
+  "Toggle vs. Hold Options",
+  "Assist Modes",
+  "Adaptive Controller Support",
+  "Motion Controls Sensitivity",
+  "Difficulty Adjustments",
+  "Game Speed Control",
+  "Skip Quick-Time Events (QTEs)",
+  "Guided Mode",
+  "Customizable HUD",
+  "Text-to-Speech & Speech-to-Text",
+];
+
 export function useHomeState() {
   const [state, setState] = useState<HomeState>({
     allGames: [],
@@ -88,9 +113,13 @@ export function useHomeState() {
   }
 
   function selectCategory(value: string) {
+    let searchTerm = "";
+    if (value === "Accessibility") searchTerm = accessibilityOptions[0];
+
     setState({
       ...state,
       selectedCategory: value,
+      searchTerm: searchTerm,
     });
   }
 
