@@ -48,6 +48,109 @@ const accessibilityOptions = [
   "Text-to-Speech & Speech-to-Text",
 ];
 
+const gameCategories = [
+  "Action RPG",
+  "Survival Horror",
+  "Metroidvania",
+  "Roguelike",
+  "Tower Defense",
+  "Battle Royale",
+  "City Builder",
+  "Farming Simulator",
+  "Turn-Based Strategy",
+  "Card Battler",
+  "Hack and Slash",
+  "Rhythm Game",
+  "Soulslike",
+  "Text-Based Adventure",
+  "MMORPG",
+  "Sandbox",
+  "Bullet Hell",
+  "Stealth",
+  "Party Game",
+  "Auto Battler",
+];
+
+const platforms = [
+  "PC",
+  "PlayStation 5",
+  "Xbox Series X/S",
+  "Nintendo Switch",
+  "Mobile",
+  "PlayStation 4",
+  "Xbox One",
+  "Web Browser",
+];
+
+interface Pr {
+  setSearchTerm: (value: string) => void;
+  selectedCategory: string;
+  searchTerm: string;
+}
+
+function Stuff({ selectedCategory, setSearchTerm, searchTerm }: Pr): ReactNode {
+  if (selectedCategory === "Accessibility")
+    return (
+      <Select
+        defaultValue={accessibilityOptions[0]}
+        onValueChange={(value) => setSearchTerm(value)}
+      >
+        <SelectTrigger className="w-[150px] bg-foreground rounded-md py-2 text-background">
+          <SelectValue placeholder="Accessibility" />
+        </SelectTrigger>
+        <SelectContent>
+          {accessibilityOptions.map((x) => (
+            <SelectItem value={x}>{x}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    );
+
+  if (selectedCategory === "Category")
+    return (
+      <Select
+        defaultValue={gameCategories[0]}
+        onValueChange={(value) => setSearchTerm(value)}
+      >
+        <SelectTrigger className="w-[150px] bg-foreground rounded-md py-2 text-background">
+          <SelectValue placeholder="Categories" />
+        </SelectTrigger>
+        <SelectContent>
+          {gameCategories.map((x) => (
+            <SelectItem value={x}>{x}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    );
+
+  if (selectedCategory === "Platform")
+    return (
+      <Select
+        defaultValue={platforms[0]}
+        onValueChange={(value) => setSearchTerm(value)}
+      >
+        <SelectTrigger className="w-[150px] bg-foreground rounded-md py-2 text-background">
+          <SelectValue placeholder="Platforms" />
+        </SelectTrigger>
+        <SelectContent>
+          {platforms.map((x) => (
+            <SelectItem value={x}>{x}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    );
+
+  return (
+    <Input
+      type="text"
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      className="w-2/4 bg-background"
+      placeholder="What are you looking for? (Name, Category, Platform, etc)"
+    />
+  );
+}
+
 function Home(): ReactNode {
   const {
     searchTerm,
@@ -89,29 +192,11 @@ function Home(): ReactNode {
               </SelectContent>
             </Select>
 
-            {selectedCategory === "Accessibility" ? (
-              <Select
-                defaultValue={accessibilityOptions[0]}
-                onValueChange={(value) => setSearchTerm(value)}
-              >
-                <SelectTrigger className="w-[150px] bg-foreground rounded-md py-2 text-background">
-                  <SelectValue placeholder="Accessibility" />
-                </SelectTrigger>
-                <SelectContent>
-                  {accessibilityOptions.map((x) => (
-                    <SelectItem value={x}>{x}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            ) : (
-              <Input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-2/4 bg-background"
-                placeholder="What are you looking for? (Name, Category, Platform, etc)"
-              />
-            )}
+            <Stuff
+              searchTerm={searchTerm}
+              selectedCategory={selectedCategory}
+              setSearchTerm={setSearchTerm}
+            />
           </div>
         </div>
       </article>
