@@ -26,7 +26,10 @@ const links: { title: string; href: string; description: string }[] = [
 export default function Navbar(): ReactNode {
   const authState = useContext(AuthContext);
   const toggleDarkMode = () => {
-    document.body.classList.toggle("dark");
+    const result = document.body.classList.toggle("dark");
+
+    if (result) localStorage.setItem("theme", "dark");
+    else localStorage.setItem("theme", "light");
   };
 
   const loc = document.location.pathname;
