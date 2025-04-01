@@ -71,7 +71,7 @@ export function useHomeState() {
       setState({
         ...state,
         allGames: games.map((x) => x as unknown as Game),
-        totalPages: Math.ceil(games.length / 6),
+        totalPages: Math.ceil(games.length / 12),
       });
     } catch (error) {
       console.error("Error fetching games:", error);

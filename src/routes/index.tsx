@@ -23,6 +23,31 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
+const accessibilityOptions = [
+  "Colorblind Modes",
+  "High Contrast Mode",
+  "Text Size Adjustments",
+  "Customizable UI",
+  "Screen Reader Support",
+  "No Flashing Effects",
+  "Subtitles & Closed Captions",
+  "Speaker Identification in Subtitles",
+  "Visual Sound Indicators",
+  "Customizable Subtitle Backgrounds",
+  "Rebindable Controls",
+  "One-Handed Mode",
+  "Toggle vs. Hold Options",
+  "Assist Modes",
+  "Adaptive Controller Support",
+  "Motion Controls Sensitivity",
+  "Difficulty Adjustments",
+  "Game Speed Control",
+  "Skip Quick-Time Events (QTEs)",
+  "Guided Mode",
+  "Customizable HUD",
+  "Text-to-Speech & Speech-to-Text",
+];
+
 function Home(): ReactNode {
   const {
     searchTerm,
@@ -32,9 +57,10 @@ function Home(): ReactNode {
     setCurrentPage,
     setSearchTerm,
     getFilteredGames,
+    selectedCategory,
   } = useHomeState();
 
-  const gamesPerPage = 6;
+  const gamesPerPage = 12;
 
   return (
     <section className="min-h-screen space-y-8">
@@ -62,13 +88,30 @@ function Home(): ReactNode {
                 <SelectItem value="Accessibility">Accessibility</SelectItem>
               </SelectContent>
             </Select>
-            <Input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-2/4 bg-background"
-              placeholder="What are you looking for? (Name, Category, Platform, etc)"
-            />
+
+            {selectedCategory === "Accessibility" ? (
+              <Select
+                defaultValue={accessibilityOptions[0]}
+                onValueChange={(value) => setSearchTerm(value)}
+              >
+                <SelectTrigger className="w-[150px] bg-foreground rounded-md py-2 text-background">
+                  <SelectValue placeholder="Accessibility" />
+                </SelectTrigger>
+                <SelectContent>
+                  {accessibilityOptions.map((x) => (
+                    <SelectItem value={x}>{x}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <Input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-2/4 bg-background"
+                placeholder="What are you looking for? (Name, Category, Platform, etc)"
+              />
+            )}
           </div>
         </div>
       </article>
