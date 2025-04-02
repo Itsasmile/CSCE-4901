@@ -92,7 +92,7 @@ function Stuff({ selectedCategory, setSearchTerm, searchTerm }: Pr): ReactNode {
   if (selectedCategory === "Accessibility")
     return (
       <Select
-        defaultValue={accessibilityOptions[0]}
+        value={accessibilityOptions[0]}
         onValueChange={(value) => setSearchTerm(value)}
       >
         <SelectTrigger className="w-[150px] bg-foreground rounded-md py-2 text-background">
@@ -100,7 +100,7 @@ function Stuff({ selectedCategory, setSearchTerm, searchTerm }: Pr): ReactNode {
         </SelectTrigger>
         <SelectContent>
           {accessibilityOptions.map((x) => (
-            <SelectItem value={x}>{x}</SelectItem>
+            <SelectItem key={x} value={x}>{x}</SelectItem>
           ))}
         </SelectContent>
       </Select>
@@ -109,7 +109,7 @@ function Stuff({ selectedCategory, setSearchTerm, searchTerm }: Pr): ReactNode {
   if (selectedCategory === "Category")
     return (
       <Select
-        defaultValue={gameCategories[0]}
+        value={gameCategories[0]}
         onValueChange={(value) => setSearchTerm(value)}
       >
         <SelectTrigger className="w-[150px] bg-foreground rounded-md py-2 text-background">
@@ -117,7 +117,7 @@ function Stuff({ selectedCategory, setSearchTerm, searchTerm }: Pr): ReactNode {
         </SelectTrigger>
         <SelectContent>
           {gameCategories.map((x) => (
-            <SelectItem value={x}>{x}</SelectItem>
+            <SelectItem key={x} value={x}>{x}</SelectItem>
           ))}
         </SelectContent>
       </Select>
@@ -126,7 +126,7 @@ function Stuff({ selectedCategory, setSearchTerm, searchTerm }: Pr): ReactNode {
   if (selectedCategory === "Platform")
     return (
       <Select
-        defaultValue={platforms[0]}
+        value={platforms[0]}
         onValueChange={(value) => setSearchTerm(value)}
       >
         <SelectTrigger className="w-[150px] bg-foreground rounded-md py-2 text-background">
@@ -134,7 +134,7 @@ function Stuff({ selectedCategory, setSearchTerm, searchTerm }: Pr): ReactNode {
         </SelectTrigger>
         <SelectContent>
           {platforms.map((x) => (
-            <SelectItem value={x}>{x}</SelectItem>
+            <SelectItem key={x} value={x}>{x}</SelectItem>
           ))}
         </SelectContent>
       </Select>
