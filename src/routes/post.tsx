@@ -90,28 +90,41 @@ function RouteComponent() {
   const [accessibility, setAccessibility] = useState<string[]>([]);
   const navigate = useNavigate();
 
+  const fileToBase64 = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+  
   const handlePostGame = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      let imageDataUrl: string | undefined = undefined;
+  
+      if (image) {
+        imageDataUrl = await fileToBase64(image);
+      }
+  
       const game: typeof gamesTables.$inferInsert = {
         title,
         categories,
         platform,
         rating,
-        image: image
-          ? `data:image/png;base64,${btoa(String.fromCharCode(...new Uint8Array(await image.arrayBuffer())))}`
-          : undefined,
+        image: imageDataUrl,
         description,
         short_description: shortDescription,
         accessibility,
       };
-
+  
       await db.insert(gamesTables).values(game);
       navigate({ to: "/" });
     } catch (error) {
       console.error("Error adding game:", error);
     }
   };
+  
 
   const uploadImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
