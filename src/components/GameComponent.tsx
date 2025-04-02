@@ -8,12 +8,12 @@ import { GameImage } from "./game-image";
 
 interface Props {
   game: Game;
-  
 }
 
 export default function GameComponent({ game }: Props): ReactNode {
+  const url = `/game/${game.id}`;
   return (
-    <Link to={`/game/${game.id}`} key={game.id} className="p-4">
+    <Link to={url} key={game.id} className="p-4">
       <Card className="overflow-hidden h-full flex flex-col">
         <CardHeader className="p-0">
           <GameImage src={game.image} alt={`Screenshot from ${game.title}`} />

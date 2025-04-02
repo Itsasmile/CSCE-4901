@@ -53,7 +53,7 @@ export default function Navbar(): ReactNode {
                 asChild
                 className={navigationMenuTriggerStyle()}
               >
-                <Link href={link.href}>{link.title}</Link>
+                <Link to={link.href}>{link.title}</Link>
               </NavigationMenuItem>
             </NavigationMenuItem>
           ))}
